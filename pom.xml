@@ -92,7 +92,7 @@
     </dependencies>
 
     <build>
-        <finalName>medipalserver</finalName>
+        <finalName>ROOT</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -128,5 +128,5 @@
             </plugin>
         </plugins>
     </build>
-    <name>medipalserverl</name>
+    <name>ROOT</name>
 </project>
