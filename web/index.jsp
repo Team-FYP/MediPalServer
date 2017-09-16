@@ -13,6 +13,7 @@
   <link rel="stylesheet" type="text/css" href="css/style3.css" />
   <!--[if lt IE 10]>
   <link rel="stylesheet" type="text/css" href="css/style3IE.css" />
+  <link rel="icon" href="images/medipal_logo.png">
   <![endif]-->
 </head>
 <body>
