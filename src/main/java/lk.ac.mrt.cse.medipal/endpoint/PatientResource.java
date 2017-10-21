@@ -42,15 +42,15 @@ public class PatientResource {
     @Path("/signup")
     public Response patientSignUp(String request) {
         JsonObject jsonObject = new JsonParser().parse(request).getAsJsonObject();
-        String nic = jsonObject.get("username").getAsString();
-        String name = jsonObject.get("password").getAsString();
-        String gender = jsonObject.get("password").getAsString();
-        String email = jsonObject.get("password").getAsString();
-        String birthday = jsonObject.get("password").getAsString();
-        String mobile = jsonObject.get("password").getAsString();
-        String emergency_contact = jsonObject.get("password").getAsString();
+        String nic = jsonObject.get("nic").getAsString();
+        String name = jsonObject.get("name").getAsString();
+        String gender = jsonObject.get("gender").getAsString();
+        String email = jsonObject.get("email").getAsString();
+        String birthday = jsonObject.get("birthday").getAsString();
+        String mobile = jsonObject.get("mobile").getAsString();
+        String emergency_contact = jsonObject.get("emergency_contact").getAsString();
         String password = jsonObject.get("password").getAsString();
-        String image = jsonObject.get("password").getAsString();
+        String image = jsonObject.get("image").getAsString();
         Patient patient = new Patient(nic,name,gender,email,birthday,mobile,emergency_contact,password,image);
         PatientController patientController = new PatientController();
         boolean saveResult = patientController.savePatient(patient);
