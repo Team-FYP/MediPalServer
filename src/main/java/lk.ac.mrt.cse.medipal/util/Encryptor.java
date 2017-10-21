@@ -1,5 +1,7 @@
 package lk.ac.mrt.cse.medipal.util;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.log4j.Logger;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -8,13 +10,20 @@ import java.security.NoSuchAlgorithmException;
  * Created by lakshan on 10/21/17.
  */
 public class Encryptor {
-    public static String encryptMD5(String plainText) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    public static Logger LOGGER = org.apache.log4j.Logger.getLogger(Encryptor.class);
 
-        byte[] bytesOfMessage = plainText.getBytes("UTF-8");
+    public static String encryptMD5(String plainText) {
+        String cipherText = DigestUtils
+                .md5Hex(plainText).toUpperCase();
+        return cipherText;
+    }
 
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        byte[] cipherBytes = md.digest(bytesOfMessage);
-
-        return new String(cipherBytes);
+    public static boolean verifyPassword(String plainText, String hash){
+        String cipherText = DigestUtils
+                .md5Hex(plainText).toUpperCase();
+        if (hash.equals(cipherText)){
+            return true;
+        }
+        return false;
     }
 }

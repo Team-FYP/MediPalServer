@@ -7,6 +7,9 @@
         <param-name>log4j-config-location</param-name>
         <param-value>WEB-INF/log4j.properties</param-value>
     </context-param>
+    <listener>
+        <listener-class>lk.ac.mrt.cse.medipal.util.ContextListener</listener-class>
+    </listener>
     <servlet>
         <servlet-name>REST API</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>

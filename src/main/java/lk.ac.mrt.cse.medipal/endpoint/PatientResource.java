@@ -27,13 +27,16 @@ public class PatientResource {
         JsonObject jsonObject = new JsonParser().parse(request).getAsJsonObject();
         String username = jsonObject.get("username").getAsString();
         String password = jsonObject.get("password").getAsString();
-        String result = "";
-//        try {
-//            result = new DeviceHandler().getDeviceList(app_id);
-//        } catch (IdeabizException e) {
-//            logger.error("Ideabiz error:"+e.getMessage());
-//        }
-        return Response.status(Response.Status.OK).entity(result).build();
+        PatientController patientController = new PatientController();
+        boolean result = patientController.checkLogin(username,password);
+        JsonObject returnObject = new JsonObject();
+        returnObject.addProperty("success",result);
+        if (result) {
+            returnObject.addProperty("message","Successfully Logged In");
+        } else {
+            returnObject.addProperty("message","Login Failed");
+        }
+        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
@@ -57,11 +60,6 @@ public class PatientResource {
         JsonObject returnObject = new JsonObject();
         returnObject.addProperty("success",saveResult);
         returnObject.addProperty("message","Successfully Signed Up");
-//        try {
-//            result = new DeviceHandler().getDeviceList(app_id);
-//        } catch (IdeabizException e) {
-//            logger.error("Ideabiz error:"+e.getMessage());
-//        }
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
 

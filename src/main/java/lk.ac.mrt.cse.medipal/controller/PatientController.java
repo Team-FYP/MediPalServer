@@ -2,6 +2,7 @@ package lk.ac.mrt.cse.medipal.controller;
 
 import lk.ac.mrt.cse.medipal.Database.DB_Connection;
 import lk.ac.mrt.cse.medipal.constants.Constants;
+import lk.ac.mrt.cse.medipal.constants.DB_constants;
 import lk.ac.mrt.cse.medipal.model.Patient;
 import lk.ac.mrt.cse.medipal.util.Encryptor;
 import lk.ac.mrt.cse.medipal.util.ImageUtil;
@@ -46,7 +47,7 @@ public class PatientController {
             preparedStatement.setString(9, ImageUtil.stringtoImage(patient.getImage(),Constants.PROFILE_PIC_PREFIX+patient.getNic(), Constants.FILE_FORMAT_JPG));
 
             status = 0 < preparedStatement.executeUpdate();
-        } catch (SQLException | IOException | PropertyVetoException | NoSuchAlgorithmException ex) {
+        } catch (SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error saving Patient", ex);
         } finally {
             try {
@@ -58,5 +59,30 @@ public class PatientController {
             }
         }
         return status;
+    }
+
+    public boolean checkLogin(String username, String password){
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "SELECT * FROM  `patient` WHERE `NIC` = ?";
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setString(1, username);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()){
+                String hash = resultSet.getString(DB_constants.Patient.PASSWORD);
+                return Encryptor.verifyPassword(password,hash);
+            }
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error patient login", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return false;
     }
 }
