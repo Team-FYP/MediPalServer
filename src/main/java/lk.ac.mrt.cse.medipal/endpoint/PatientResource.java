@@ -3,6 +3,8 @@ package lk.ac.mrt.cse.medipal.endpoint;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lk.ac.mrt.cse.medipal.controller.PatientController;
+import lk.ac.mrt.cse.medipal.model.Patient;
 import org.apache.log4j.Logger;
 
 import javax.ws.rs.*;
@@ -21,7 +23,7 @@ public class PatientResource {
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     @Path("/login")
-    public Response getBusList(String request) {
+    public Response login(String request) {
         JsonObject jsonObject = new JsonParser().parse(request).getAsJsonObject();
         String username = jsonObject.get("username").getAsString();
         String password = jsonObject.get("password").getAsString();
@@ -32,6 +34,35 @@ public class PatientResource {
 //            logger.error("Ideabiz error:"+e.getMessage());
 //        }
         return Response.status(Response.Status.OK).entity(result).build();
+    }
+
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    @Path("/signup")
+    public Response patientSignUp(String request) {
+        JsonObject jsonObject = new JsonParser().parse(request).getAsJsonObject();
+        String nic = jsonObject.get("username").getAsString();
+        String name = jsonObject.get("password").getAsString();
+        String gender = jsonObject.get("password").getAsString();
+        String email = jsonObject.get("password").getAsString();
+        String birthday = jsonObject.get("password").getAsString();
+        String mobile = jsonObject.get("password").getAsString();
+        String emergency_contact = jsonObject.get("password").getAsString();
+        String password = jsonObject.get("password").getAsString();
+        String image = jsonObject.get("password").getAsString();
+        Patient patient = new Patient(nic,name,gender,email,birthday,mobile,emergency_contact,password,image);
+        PatientController patientController = new PatientController();
+        boolean saveResult = patientController.savePatient(patient);
+        JsonObject returnObject = new JsonObject();
+        returnObject.addProperty("success",saveResult);
+        returnObject.addProperty("message","Successfully Signed Up");
+//        try {
+//            result = new DeviceHandler().getDeviceList(app_id);
+//        } catch (IdeabizException e) {
+//            logger.error("Ideabiz error:"+e.getMessage());
+//        }
+        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
 
 }
