@@ -10,5 +10,6 @@ package lk.ac.mrt.cse.medipal.constants;
  * @author ndine
  */
 public class Constants {
-
+    public static final String PROFILE_PIC_PREFIX = "profile_";
+    public static final String FILE_FORMAT_JPG = "jpg";
 }
