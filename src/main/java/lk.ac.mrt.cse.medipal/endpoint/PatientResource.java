@@ -1,6 +1,6 @@
 package lk.ac.mrt.cse.medipal.endpoint;
 
-import com.google.gson.JsonArray;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lk.ac.mrt.cse.medipal.controller.PatientController;
@@ -13,6 +13,8 @@ import javax.ws.rs.core.Response;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+
 /**
  * Created by lakshan on 9/19/17.
  */
@@ -25,6 +27,7 @@ public class PatientResource {
     @Path("/login")
     public Response login(String request) {
         JsonObject jsonObject = new JsonParser().parse(request).getAsJsonObject();
+        Gson gson = new Gson();
         String username = jsonObject.get("username").getAsString();
         String password = jsonObject.get("password").getAsString();
         PatientController patientController = new PatientController();
@@ -32,6 +35,9 @@ public class PatientResource {
         JsonObject returnObject = new JsonObject();
         returnObject.addProperty("success",result);
         if (result) {
+            Patient patient = patientController.getPatiaentDetails(username);
+            String patientDetails = gson.toJson(patient);
+            returnObject.addProperty("patientData",patientDetails);
             returnObject.addProperty("message","Successfully Logged In");
         } else {
             returnObject.addProperty("message","Login Failed");

@@ -1,5 +1,6 @@
 package lk.ac.mrt.cse.medipal.controller;
 
+import com.google.gson.JsonObject;
 import lk.ac.mrt.cse.medipal.Database.DB_Connection;
 import lk.ac.mrt.cse.medipal.constants.Constants;
 import lk.ac.mrt.cse.medipal.constants.DB_constants;
@@ -12,10 +13,9 @@ import org.apache.log4j.Logger;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by lakshan on 9/19/17.
@@ -84,5 +84,38 @@ public class PatientController {
             }
         }
         return false;
+    }
+
+    public Patient getPatiaentDetails(String username){
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "SELECT * FROM  `patient` WHERE `NIC` = ?";
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setString(1, username);
+            resultSet = preparedStatement.executeQuery();
+            Patient patient = new Patient();
+            if (resultSet.next()){
+                patient.setNic(resultSet.getString("NIC"));
+                patient.setName(resultSet.getString("PATIENT_NAME"));
+                patient.setGender(resultSet.getString("GENDER"));
+                patient.setEmail(resultSet.getString("EMAIL"));
+                patient.setBirthday(resultSet.getString("BIRTHDAY"));
+                patient.setMobile(resultSet.getString("CONTACT_NUMBER"));
+                patient.setEmergency_contact(resultSet.getString("EMERGENCY_CONTACT_NUMBER"));
+                patient.setImage(resultSet.getString("PROFILE_PICTURE"));
+                return patient;
+            }
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting patient details", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return null;
     }
 }
