@@ -27,4 +27,17 @@ public class DB_constants {
         public static String PASSWORD = "PASSWORD";
         public static String PROFILE_PICTURE = "PROFILE_PICTURE";
     }
+
+    public static class Doctor{
+        public static String REGISTRATION_NO = "REGISTRATION_NO";
+        public static String SPECIALITY = "SPECIALITY";
+        public static String NAME = "NAME";
+        public static String GENDER = "GENDER";
+        public static String EMAIL = "EMAIL";
+        public static String CONTACT_NUMBER = "CONTACT_NUMBER";
+        public static String PASSWORD = "PASSWORD";
+        public static String PROFILE_PICTURE = "PROFILE_PICTURE";
+        public static String PRESCRIPTION_PRESCRIPTION_ID = "PRESCRIPTION_PRESCRIPTION_ID";
+        public static String PRESCRIPTION_PATIENT_NIC = "PRESCRIPTION_PATIENT_NIC";
+    }
 }

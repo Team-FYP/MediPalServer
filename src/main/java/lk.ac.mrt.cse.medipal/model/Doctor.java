@@ -8,12 +8,21 @@ public class Doctor {
     private String registration_id;
     private String speciality;
     private String name;
-    private int gender; // 0-male 1-female
+    private String gender;
     private String email;
     private String mobile;
+    private String password;
     private String image;
 
-    public Doctor() {
+    public Doctor(String registration_id, String speciality, String name, String gender, String email, String mobile, String password, String image) {
+        this.registration_id = registration_id;
+        this.speciality = speciality;
+        this.name = name;
+        this.gender = gender;
+        this.email = email;
+        this.mobile = mobile;
+        this.password = password;
+        this.image = image;
     }
 
     public String getRegistration_id() {
@@ -40,11 +49,11 @@ public class Doctor {
         this.name = name;
     }
 
-    public int getGender() {
+    public String getGender() {
         return gender;
     }
 
-    public void setGender(int gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 
@@ -70,5 +79,13 @@ public class Doctor {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
