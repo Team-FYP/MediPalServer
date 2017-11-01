@@ -25,6 +25,9 @@ public class Doctor {
         this.image = image;
     }
 
+    public Doctor() {
+    }
+
     public String getRegistration_id() {
         return registration_id;
     }

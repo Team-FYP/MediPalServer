@@ -9,6 +9,7 @@ import lk.ac.mrt.cse.medipal.util.ImageUtil;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.log4j.Logger;
 
+import javax.print.Doc;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.sql.Connection;
@@ -78,5 +79,37 @@ public class DoctorController {
             }
         }
         return false;
+    }
+
+    public Doctor getDoctorDetails(String username){
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "SELECT * FROM  `doctor` WHERE `REGISTRATION_NO` = ?";
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setString(1, username);
+            resultSet = preparedStatement.executeQuery();
+            Doctor doctor = new Doctor();
+            if (resultSet.next()){
+                doctor.setRegistration_id(resultSet.getString("REGISTRATION_NO"));
+                doctor.setSpeciality(resultSet.getString("SPECIALITY"));
+                doctor.setName(resultSet.getString("NAME"));
+                doctor.setGender(resultSet.getString("GENDER"));
+                doctor.setEmail(resultSet.getString("EMAIL"));
+                doctor.setMobile(resultSet.getString("CONTACT_NUMBER"));
+                doctor.setImage(resultSet.getString("PROFILE_PICTURE"));
+                return doctor;
+            }
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting doctor details", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return null;
     }
 }

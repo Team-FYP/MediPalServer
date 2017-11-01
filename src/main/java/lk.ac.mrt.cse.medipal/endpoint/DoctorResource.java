@@ -1,6 +1,7 @@
 package lk.ac.mrt.cse.medipal.endpoint;
 
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lk.ac.mrt.cse.medipal.controller.DoctorController;
@@ -25,6 +26,7 @@ public class DoctorResource {
     @Path("/login")
     public Response login(String request) {
         JsonObject jsonObject = new JsonParser().parse(request).getAsJsonObject();
+        Gson gson = new Gson();
         String username = jsonObject.get("username").getAsString();
         String password = jsonObject.get("password").getAsString();
         DoctorController doctorController = new DoctorController();
@@ -32,6 +34,9 @@ public class DoctorResource {
         JsonObject returnObject = new JsonObject();
         returnObject.addProperty("success",result);
         if (result) {
+            Doctor doctor = doctorController.getDoctorDetails(username);
+            String doctorDetails = gson.toJson(doctor);
+            returnObject.addProperty("doctorData",doctorDetails);
             returnObject.addProperty("message","Successfully Logged In");
         } else {
             returnObject.addProperty("message","Login Failed");
