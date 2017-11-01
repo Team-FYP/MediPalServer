@@ -36,7 +36,8 @@ public class DoctorResource {
         if (result) {
             Doctor doctor = doctorController.getDoctorDetails(username);
             String doctorDetails = gson.toJson(doctor);
-            returnObject.addProperty("doctorData",doctorDetails);
+            JsonObject doctorDetailObject = new JsonParser().parse(doctorDetails).getAsJsonObject();
+            returnObject.add("doctorData",doctorDetailObject);
             returnObject.addProperty("message","Successfully Logged In");
         } else {
             returnObject.addProperty("message","Login Failed");
