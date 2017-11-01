@@ -15,10 +15,15 @@ public class ImageUtil {
     public static String imagePath = "/home/medipal/images/";
     public static String stringtoImage(String encodedImageStr, String fileName, String extension) {
         String fileDirectory = "profile/";
+        String imageUrl = null;
+        String baseUrl = "http://medipal.projects.mrt.ac.lk/images/profile/";
         String filePath = null;
         try {
             fileName = fileName + "." + extension;
             filePath = imagePath + fileDirectory + fileName;
+            //get the image accessing URL
+            imageUrl = baseUrl + fileName;
+
             // Decode String using Base64 Class
             byte[] imageByteArray = Base64.decodeBase64(encodedImageStr);
 
@@ -31,6 +36,6 @@ public class ImageUtil {
         } catch (IOException ex) {
             LOGGER.error("Exception while converting the Image " , ex);
         }
-        return filePath;
+        return imageUrl;
     }
 }
