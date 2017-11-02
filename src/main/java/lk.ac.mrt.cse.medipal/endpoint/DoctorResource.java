@@ -67,6 +67,7 @@ public class DoctorResource {
         DoctorController doctorController = new DoctorController();
         boolean saveResult = doctorController.saveDoctor(doctor);
         JsonObject returnObject = new JsonObject();
+        returnObject.addProperty("success",saveResult);
         if(saveResult){
             Doctor savedDoctor = doctorController.getDoctorDetails(registration_id);
             String doctorDetails = gson.toJson(savedDoctor);

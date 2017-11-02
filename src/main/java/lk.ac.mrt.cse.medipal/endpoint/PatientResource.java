@@ -67,6 +67,7 @@ public class PatientResource {
         PatientController patientController = new PatientController();
         boolean saveResult = patientController.savePatient(patient);
         JsonObject returnObject = new JsonObject();
+        returnObject.addProperty("success",saveResult);
         if(saveResult){
             Patient savedPatient = patientController.getPatiaentDetails(nic);
             String patientDetails = gson.toJson(savedPatient);
