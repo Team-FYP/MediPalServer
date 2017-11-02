@@ -1,6 +1,7 @@
 package lk.ac.mrt.cse.medipal.endpoint;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lk.ac.mrt.cse.medipal.controller.PatientController;
@@ -38,7 +39,7 @@ public class PatientResource {
             Patient patient = patientController.getPatiaentDetails(username);
             String patientDetails = gson.toJson(patient);
             JsonObject patientDetailObject = new JsonParser().parse(patientDetails).getAsJsonObject();
-            returnObject.add("patientData",patientDetailObject);
+            returnObject.add("userData",patientDetailObject);
             returnObject.addProperty("message","Successfully Logged In");
         } else {
             returnObject.addProperty("message","Login Failed");
@@ -52,6 +53,7 @@ public class PatientResource {
     @Path("/signup")
     public Response patientSignUp(String request) {
         JsonObject jsonObject = new JsonParser().parse(request).getAsJsonObject();
+        Gson gson = new Gson();
         String nic = jsonObject.get("nic").getAsString();
         String name = jsonObject.get("name").getAsString();
         String gender = jsonObject.get("gender").getAsString();
@@ -65,8 +67,31 @@ public class PatientResource {
         PatientController patientController = new PatientController();
         boolean saveResult = patientController.savePatient(patient);
         JsonObject returnObject = new JsonObject();
-        returnObject.addProperty("success",saveResult);
-        returnObject.addProperty("message","Successfully Signed Up");
+        if(saveResult){
+            Patient savedPatient = patientController.getPatiaentDetails(nic);
+            String patientDetails = gson.toJson(savedPatient);
+            JsonObject patientDetailObject = new JsonParser().parse(patientDetails).getAsJsonObject();
+            returnObject.add("userData",patientDetailObject);
+            returnObject.addProperty("message","Successfully Saved");
+        }
+        else {
+            returnObject.addProperty("message","Saving Failed");
+        }
+        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+    }
+
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    @Path("/patients")
+    public Response allPatients(String request) {
+        Gson gson = new Gson();
+        PatientController patientController = new PatientController();
+        JsonObject returnObject = new JsonObject();
+        ArrayList<Patient> patientsList = patientController.getAllPatiaents();
+        JsonArray patientArray = gson.toJsonTree(patientsList).getAsJsonArray();
+        returnObject.add("patientList",patientArray);
+
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
 

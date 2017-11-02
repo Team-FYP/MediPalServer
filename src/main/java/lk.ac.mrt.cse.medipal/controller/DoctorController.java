@@ -4,6 +4,7 @@ import lk.ac.mrt.cse.medipal.Database.DB_Connection;
 import lk.ac.mrt.cse.medipal.constants.Constants;
 import lk.ac.mrt.cse.medipal.constants.DB_constants;
 import lk.ac.mrt.cse.medipal.model.Doctor;
+import lk.ac.mrt.cse.medipal.model.Patient;
 import lk.ac.mrt.cse.medipal.util.Encryptor;
 import lk.ac.mrt.cse.medipal.util.ImageUtil;
 import org.apache.commons.dbutils.DbUtils;
@@ -16,6 +17,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class DoctorController {
     private static PreparedStatement preparedStatement;
@@ -101,6 +103,39 @@ public class DoctorController {
             }
         } catch (SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error getting doctor details", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<Doctor> getAllDoctors(){
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "SELECT * FROM  `doctor`";
+            preparedStatement = connection.prepareStatement(SQL);
+            resultSet = preparedStatement.executeQuery();
+            ArrayList<Doctor> doctorsList = new ArrayList<>();
+            while (resultSet.next()){
+                Doctor doctor = new Doctor();
+                doctor.setRegistration_id(resultSet.getString("REGISTRATION_NO"));
+                doctor.setSpeciality(resultSet.getString("SPECIALITY"));
+                doctor.setName(resultSet.getString("NAME"));
+                doctor.setGender(resultSet.getString("GENDER"));
+                doctor.setEmail(resultSet.getString("EMAIL"));
+                doctor.setMobile(resultSet.getString("CONTACT_NUMBER"));
+                doctor.setImage(resultSet.getString("PROFILE_PICTURE"));
+                doctorsList.add(doctor);
+            }
+            return doctorsList;
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting doctors list", ex);
         } finally {
             try {
                 DbUtils.closeQuietly(resultSet);

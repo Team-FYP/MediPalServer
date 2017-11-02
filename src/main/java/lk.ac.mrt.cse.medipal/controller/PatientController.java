@@ -118,4 +118,38 @@ public class PatientController {
         }
         return null;
     }
+
+    public ArrayList<Patient> getAllPatiaents(){
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "SELECT * FROM  `patient`";
+            preparedStatement = connection.prepareStatement(SQL);
+            resultSet = preparedStatement.executeQuery();
+            ArrayList<Patient> patientsList = new ArrayList<>();
+            while (resultSet.next()){
+                Patient patient = new Patient();
+                patient.setNic(resultSet.getString("NIC"));
+                patient.setName(resultSet.getString("PATIENT_NAME"));
+                patient.setGender(resultSet.getString("GENDER"));
+                patient.setEmail(resultSet.getString("EMAIL"));
+                patient.setBirthday(resultSet.getString("BIRTHDAY"));
+                patient.setMobile(resultSet.getString("CONTACT_NUMBER"));
+                patient.setEmergency_contact(resultSet.getString("EMERGENCY_CONTACT_NUMBER"));
+                patient.setImage(resultSet.getString("PROFILE_PICTURE"));
+                patientsList.add(patient);
+            }
+            return patientsList;
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting patient list", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return null;
+    }
 }
