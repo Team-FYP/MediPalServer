@@ -81,9 +81,9 @@ public class DoctorResource {
 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @POST
+    @GET
     @Path("/doctors")
-    public Response allDoctors(String request) {
+    public Response allDoctors() {
         Gson gson = new Gson();
         DoctorController doctorController = new DoctorController();
         JsonObject returnObject = new JsonObject();
@@ -93,5 +93,4 @@ public class DoctorResource {
 
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
-
 }

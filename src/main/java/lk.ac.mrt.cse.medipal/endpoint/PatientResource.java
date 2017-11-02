@@ -82,9 +82,9 @@ public class PatientResource {
 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @POST
+    @GET
     @Path("/patients")
-    public Response allPatients(String request) {
+    public Response allPatients() {
         Gson gson = new Gson();
         PatientController patientController = new PatientController();
         JsonObject returnObject = new JsonObject();
