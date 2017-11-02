@@ -75,4 +75,34 @@ public class DrugController {
         }
         return null;
     }
+
+    public ArrayList<Drug> getDrugsByDiease(int diseaseID){
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "SELECT * FROM  `drug` WHERE `disease_id`= ?";
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setInt(1, diseaseID);
+            resultSet = preparedStatement.executeQuery();
+            ArrayList<Drug> drugList = new ArrayList<Drug>();
+            while (resultSet.next()){
+                Drug drug = new Drug();
+                drug.setDrug_id(resultSet.getInt("drug_id"));
+                drug.setDrug_name(resultSet.getString("drug_name"));
+                drug.setCategory_id(resultSet.getInt("category_id"));
+                drugList.add(drug);
+            }
+            return drugList;
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting drugs for disease details", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return null;
+    }
 }
