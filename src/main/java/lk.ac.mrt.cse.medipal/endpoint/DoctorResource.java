@@ -94,4 +94,19 @@ public class DoctorResource {
 
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
+
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/{id}/mypatients")
+    public Response allPatientsOfDoctor(@PathParam("id") String doctorID) {
+        Gson gson = new Gson();
+        DoctorController doctorController = new DoctorController();
+        JsonObject returnObject = new JsonObject();
+        ArrayList<Patient> patientsList = doctorController.getPatiaentDetailsByDoctorID(doctorID);
+        JsonArray patientArray = gson.toJsonTree(patientsList).getAsJsonArray();
+        returnObject.add("patientList",patientArray);
+
+        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+    }
 }

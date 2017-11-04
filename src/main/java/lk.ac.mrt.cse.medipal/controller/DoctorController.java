@@ -148,15 +148,16 @@ public class DoctorController {
         return null;
     }
 
-    public Patient getPatiaentDetailsByDoctorID(String username){
+    public ArrayList<Patient> getPatiaentDetailsByDoctorID(String username){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL = "SELECT * FROM `patient` WHERE `NIC` IN (SELECT `PATIENT_NIC` FROM  `patient_has_doctor` WHERE `DOCTOR_REGISTRATION_NO` = ?)";
             preparedStatement = connection.prepareStatement(SQL);
             preparedStatement.setString(1, username);
             resultSet = preparedStatement.executeQuery();
-            Patient patient = new Patient();
-            if (resultSet.next()){
+            ArrayList<Patient> patientsList = new ArrayList<>();
+            while (resultSet.next()){
+                Patient patient = new Patient();
                 patient.setNic(resultSet.getString("NIC"));
                 patient.setName(resultSet.getString("PATIENT_NAME"));
                 patient.setGender(resultSet.getString("GENDER"));
@@ -165,8 +166,9 @@ public class DoctorController {
                 patient.setMobile(resultSet.getString("CONTACT_NUMBER"));
                 patient.setEmergency_contact(resultSet.getString("EMERGENCY_CONTACT_NUMBER"));
                 patient.setImage(resultSet.getString("PROFILE_PICTURE"));
-                return patient;
+                patientsList.add(patient);
             }
+            return patientsList;
         } catch (SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error getting doctor's patients details", ex);
         } finally {
