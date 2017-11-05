@@ -79,9 +79,7 @@ public class DrugController {
     public ArrayList<Drug> getDrugsByDiease(int diseaseID){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
-            String SQL = "SELECT drug.drug_id, drug.drug_name, category.CATEGORY_NAME " +
-                    "FROM drug INNER JOIN category " +
-                    "ON drug.category_id=category.CATEGORY_ID AND disease_id= ?";
+            String SQL = "SELECT * FROM  `drug` WHERE `disease_id`= ?";
             preparedStatement = connection.prepareStatement(SQL);
             preparedStatement.setInt(1, diseaseID);
             resultSet = preparedStatement.executeQuery();
@@ -140,8 +138,9 @@ public class DrugController {
     public ArrayList<String> getCategoryList(int diseaseID, ArrayList<String> drugList){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
-            String SQL = "SELECT * FROM  `drug` WHERE `disease_id`= ?";
-            preparedStatement = connection.prepareStatement(SQL);
+            String SQL = "SELECT drug.drug_id, drug.drug_name, category.CATEGORY_NAME " +
+                    "FROM drug INNER JOIN category " +
+                    "ON drug.category_id=category.CATEGORY_ID AND disease_id= ?";            preparedStatement = connection.prepareStatement(SQL);
             preparedStatement.setInt(1, diseaseID);
             resultSet = preparedStatement.executeQuery();
             ArrayList<String> categoryList = new ArrayList<String>();
