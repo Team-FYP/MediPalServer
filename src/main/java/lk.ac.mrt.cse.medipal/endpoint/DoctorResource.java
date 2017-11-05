@@ -60,10 +60,10 @@ public class DoctorResource {
         String name = jsonObject.get("name").getAsString();
         String gender = jsonObject.get("gender").getAsString();
         String email = jsonObject.get("email").getAsString();
-        String contact_no = jsonObject.get("contact_no").getAsString();
+        String mobile = jsonObject.get("mobile").getAsString();
         String password = jsonObject.get("password").getAsString();
         String image = jsonObject.get("image").getAsString();
-        Doctor doctor = new Doctor(registration_id, speciality,name,gender,email,contact_no,password,image);
+        Doctor doctor = new Doctor(registration_id, speciality,name,gender,email,mobile,password,image);
         DoctorController doctorController = new DoctorController();
         boolean saveResult = doctorController.saveDoctor(doctor);
         JsonObject returnObject = new JsonObject();
