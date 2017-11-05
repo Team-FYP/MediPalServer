@@ -19,16 +19,16 @@ public class DrugController {
     private static Connection connection;
     public static Logger LOGGER = org.apache.log4j.Logger.getLogger(DrugController.class);
 
-    public Drug getDrugDetails(int drugID){
+    public Drug getDrugDetails(String drugID){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL = "SELECT * FROM  `drug` WHERE `drug_id` = ?";
             preparedStatement = connection.prepareStatement(SQL);
-            preparedStatement.setInt(1, drugID);
+            preparedStatement.setString(1, drugID);
             resultSet = preparedStatement.executeQuery();
             Drug drug = new Drug();
             if (resultSet.next()){
-                drug.setDrug_id(resultSet.getInt("drug_id"));
+                drug.setDrug_id(resultSet.getString("drug_id"));
                 drug.setDrug_name(resultSet.getString("drug_name"));
                 drug.setCategory_id(resultSet.getInt("category_id"));
                 return drug;
@@ -56,7 +56,7 @@ public class DrugController {
             ArrayList<Drug> drugList = new ArrayList<Drug>();
             while (resultSet.next()){
                 Drug drug = new Drug();
-                drug.setDrug_id(resultSet.getInt("drug_id"));
+                drug.setDrug_id(resultSet.getString("drug_id"));
                 drug.setDrug_name(resultSet.getString("drug_name"));
                 drug.setCategory_id(resultSet.getInt("category_id"));
                 drugList.add(drug);
@@ -86,7 +86,7 @@ public class DrugController {
             ArrayList<Drug> drugList = new ArrayList<Drug>();
             while (resultSet.next()){
                 Drug drug = new Drug();
-                drug.setDrug_id(resultSet.getInt("drug_id"));
+                drug.setDrug_id(resultSet.getString("drug_id"));
                 drug.setDrug_name(resultSet.getString("drug_name"));
                 drug.setCategory_id(resultSet.getInt("category_id"));
                 drugList.add(drug);

@@ -37,7 +37,7 @@ public class DrugResource {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/{id}")
-    public Response getDrug(@PathParam("id") int drugID) {
+    public Response getDrug(@PathParam("id") String drugID) {
         Gson gson = new Gson();
         DrugController drugController = new DrugController();
         JsonObject returnObject = new JsonObject();
