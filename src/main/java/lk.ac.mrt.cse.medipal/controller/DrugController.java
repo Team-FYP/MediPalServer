@@ -30,7 +30,7 @@ public class DrugController {
             if (resultSet.next()){
                 drug.setDrug_id(resultSet.getString("drug_id"));
                 drug.setDrug_name(resultSet.getString("drug_name"));
-                drug.setCategory_id(resultSet.getInt("category_id"));
+                drug.setCategory_id(resultSet.getString("category_id"));
                 return drug;
             }
         } catch (SQLException | IOException | PropertyVetoException ex) {
@@ -48,47 +48,47 @@ public class DrugController {
     }
 
     public ArrayList<Drug> getAllDrugs(){
-        try {
-            connection = DB_Connection.getDBConnection().getConnection();
-            String SQL = "SELECT * FROM  `drug`";
-            preparedStatement = connection.prepareStatement(SQL);
-            resultSet = preparedStatement.executeQuery();
-            ArrayList<Drug> drugList = new ArrayList<Drug>();
-            while (resultSet.next()){
-                Drug drug = new Drug();
-                drug.setDrug_id(resultSet.getString("drug_id"));
-                drug.setDrug_name(resultSet.getString("drug_name"));
-                drug.setCategory_id(resultSet.getInt("category_id"));
-                drugList.add(drug);
-            }
-            return drugList;
-        } catch (SQLException | IOException | PropertyVetoException ex) {
-            LOGGER.error("Error getting drug details", ex);
-        } finally {
-            try {
-                DbUtils.closeQuietly(resultSet);
-                DbUtils.closeQuietly(preparedStatement);
-                DbUtils.close(connection);
-            } catch (SQLException ex) {
-                LOGGER.error("Error closing sql connection", ex);
-            }
-        }
+//        try {
+//            connection = DB_Connection.getDBConnection().getConnection();
+//            String SQL = "SELECT * FROM  `drug`";
+//            preparedStatement = connection.prepareStatement(SQL);
+//            resultSet = preparedStatement.executeQuery();
+//            ArrayList<Drug> drugList = new ArrayList<Drug>();
+//            while (resultSet.next()){
+//                Drug drug = new Drug();
+//                drug.setDrug_id(resultSet.getString("drug_id"));
+//                drug.setDrug_name(resultSet.getString("drug_name"));
+//                drug.setCategory_id(resultSet.getString("category_id"));
+//                drugList.add(drug);
+//            }
+//            return drugList;
+//        } catch (SQLException | IOException | PropertyVetoException ex) {
+//            LOGGER.error("Error getting drug details", ex);
+//        } finally {
+//            try {
+//                DbUtils.closeQuietly(resultSet);
+//                DbUtils.closeQuietly(preparedStatement);
+//                DbUtils.close(connection);
+//            } catch (SQLException ex) {
+//                LOGGER.error("Error closing sql connection", ex);
+//            }
+//        }
         return null;
     }
 
-    public ArrayList<Drug> getDrugsByDiease(int diseaseID){
+    public ArrayList<Drug> getDrugsByDiease(String diseaseID){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL = "SELECT * FROM  `drug` WHERE `disease_id`= ?";
             preparedStatement = connection.prepareStatement(SQL);
-            preparedStatement.setInt(1, diseaseID);
+            preparedStatement.setString(1, diseaseID);
             resultSet = preparedStatement.executeQuery();
             ArrayList<Drug> drugList = new ArrayList<Drug>();
             while (resultSet.next()){
                 Drug drug = new Drug();
                 drug.setDrug_id(resultSet.getString("drug_id"));
                 drug.setDrug_name(resultSet.getString("drug_name"));
-                drug.setCategory_id(resultSet.getInt("category_id"));
+                drug.setCategory_id(resultSet.getString("category_id"));
                 drugList.add(drug);
             }
             return drugList;
@@ -106,12 +106,13 @@ public class DrugController {
         return null;
     }
 
-    public ArrayList<String> getDrugList(int diseaseID, ArrayList<String> categoryList){
+    public ArrayList<String> getDrugListByCategoryList(int diseaseID, ArrayList<String> categoryList){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
-            String SQL = "SELECT drug.drug_id, drug.drug_name, category.CATEGORY_NAME " +
-                    "FROM drug INNER JOIN category " +
-                    "ON drug.category_id=category.CATEGORY_ID AND disease_id= ?";
+            String SQL = "SELECT drug.drug_id, drug.drug_name, category.CATEGORY_NAME, drug_disease.Disease " +
+                    "FROM drug INNER JOIN category ON drug.category_id=category.CATEGORY_ID " +
+                    "INNER JOIN drug_disease ON drug_disease.Drug = drug.drug_id " +
+                    "AND drug_disease.Disease= ?;";
             preparedStatement = connection.prepareStatement(SQL);
             preparedStatement.setInt(1, diseaseID);
             resultSet = preparedStatement.executeQuery();
@@ -135,12 +136,14 @@ public class DrugController {
         return null;
     }
 
-    public ArrayList<String> getCategoryList(int diseaseID, ArrayList<String> drugList){
+    public ArrayList<String> getCategoryListByDrugList(int diseaseID, ArrayList<String> drugList){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
-            String SQL = "SELECT drug.drug_id, drug.drug_name, category.CATEGORY_NAME " +
-                    "FROM drug INNER JOIN category " +
-                    "ON drug.category_id=category.CATEGORY_ID AND disease_id= ?";            preparedStatement = connection.prepareStatement(SQL);
+            String SQL = "SELECT drug.drug_id, drug.drug_name, category.CATEGORY_NAME, drug_disease.Disease FROM drug " +
+                    "INNER JOIN category ON drug.category_id=category.CATEGORY_ID " +
+                    "INNER JOIN drug_disease ON drug_disease.Drug = drug.drug_id " +
+                    "AND drug_disease.Disease= ?;";
+            preparedStatement = connection.prepareStatement(SQL);
             preparedStatement.setInt(1, diseaseID);
             resultSet = preparedStatement.executeQuery();
             ArrayList<String> categoryList = new ArrayList<String>();
