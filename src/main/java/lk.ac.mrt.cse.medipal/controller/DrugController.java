@@ -1,6 +1,7 @@
 package lk.ac.mrt.cse.medipal.controller;
 
 import lk.ac.mrt.cse.medipal.Database.DB_Connection;
+import lk.ac.mrt.cse.medipal.model.Disease;
 import lk.ac.mrt.cse.medipal.model.Drug;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.log4j.Logger;
@@ -48,31 +49,31 @@ public class DrugController {
     }
 
     public ArrayList<Drug> getAllDrugs(){
-//        try {
-//            connection = DB_Connection.getDBConnection().getConnection();
-//            String SQL = "SELECT * FROM  `drug`";
-//            preparedStatement = connection.prepareStatement(SQL);
-//            resultSet = preparedStatement.executeQuery();
-//            ArrayList<Drug> drugList = new ArrayList<Drug>();
-//            while (resultSet.next()){
-//                Drug drug = new Drug();
-//                drug.setDrug_id(resultSet.getString("drug_id"));
-//                drug.setDrug_name(resultSet.getString("drug_name"));
-//                drug.setCategory_id(resultSet.getString("category_id"));
-//                drugList.add(drug);
-//            }
-//            return drugList;
-//        } catch (SQLException | IOException | PropertyVetoException ex) {
-//            LOGGER.error("Error getting drug details", ex);
-//        } finally {
-//            try {
-//                DbUtils.closeQuietly(resultSet);
-//                DbUtils.closeQuietly(preparedStatement);
-//                DbUtils.close(connection);
-//            } catch (SQLException ex) {
-//                LOGGER.error("Error closing sql connection", ex);
-//            }
-//        }
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "SELECT * FROM  `drug`";
+            preparedStatement = connection.prepareStatement(SQL);
+            resultSet = preparedStatement.executeQuery();
+            ArrayList<Drug> drugList = new ArrayList<Drug>();
+            while (resultSet.next()){
+                Drug drug = new Drug();
+                drug.setDrug_id(resultSet.getString("drug_id"));
+                drug.setDrug_name(resultSet.getString("drug_name"));
+                drug.setCategory_id(resultSet.getString("category_id"));
+                drugList.add(drug);
+            }
+            return drugList;
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting drug details", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
         return null;
     }
 
@@ -164,5 +165,37 @@ public class DrugController {
             }
         }
         return null;
+    }
+
+    public boolean addDrug(Drug drug){
+        boolean status = false;
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String DRUGSQL = "INSERT INTO `drug` (`drug_id`,`drug_name`,`category_id`) VALUES (?, ?, ?) ";
+            preparedStatement = connection.prepareStatement(DRUGSQL);
+            preparedStatement.setString(1, drug.getDrug_id());
+            preparedStatement.setString(2, drug.getDrug_name());
+            preparedStatement.setString(3, drug.getCategory_id());
+            resultSet = preparedStatement.executeQuery();
+//            preparedStatement.executeUpdate();
+//            preparedStatement.close();
+//            String DISEASESQL = "INSERT INTO `drug_disease` (`Drug`,`Disease`) VALUES (?, ?) ";
+//            preparedStatement = connection.prepareStatement(DISEASESQL);
+//            preparedStatement.setString(1, drug.getDrug_id());
+//            preparedStatement.setString(2, drug.getDisease_id());
+//            resultSet = preparedStatement.executeQuery();
+            status = 0 < preparedStatement.executeUpdate();
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error saving drug", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return status;
     }
 }

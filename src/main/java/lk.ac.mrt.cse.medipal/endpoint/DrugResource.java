@@ -48,4 +48,23 @@ public class DrugResource {
 
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
+
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/adddrug")
+    public Response getDrug() {
+        Gson gson = new Gson();
+        DrugController drugController = new DrugController();
+        JsonObject returnObject = new JsonObject();
+        Drug drug = new Drug();
+        drug.setDrug_id("90");
+        drug.setDrug_name("testDrug");
+        drug.setCategory_id("1");
+        drug.setDisease_id("1");
+        boolean drugDetail = drugController.addDrug(drug);
+        returnObject.addProperty("drugDetails", drugDetail);
+
+        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+    }
 }
