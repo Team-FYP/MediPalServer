@@ -4,10 +4,10 @@ public class Drug {
 
     private String drug_id;
     private String drug_name;
-    private int category_id;
+    private String category_id;
 
 
-    public Drug(String drug_id, String drug_name, int category_id) {
+    public Drug(String drug_id, String drug_name, String category_id) {
         this.drug_id = drug_id;
         this.drug_name = drug_name;
         this.category_id = category_id;
@@ -32,11 +32,11 @@ public class Drug {
         this.drug_name = drug_name;
     }
 
-    public int getCategory_id() {
+    public String getCategory_id() {
         return category_id;
     }
 
-    public void setCategory_id(int category_id) {
+    public void setCategory_id(String category_id) {
         this.category_id = category_id;
     }
 }
