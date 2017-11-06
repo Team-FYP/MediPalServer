@@ -62,7 +62,12 @@ public class DoctorResource {
         String email = jsonObject.get("email").getAsString();
         String mobile = jsonObject.get("mobile").getAsString();
         String password = jsonObject.get("password").getAsString();
-        String image = jsonObject.get("image").getAsString();
+        String image;
+        if(jsonObject.get("image") != null){
+            image = jsonObject.get("image").getAsString();
+        }else {
+            image = null;
+        }
         Doctor doctor = new Doctor(registration_id, speciality,name,gender,email,mobile,password,image);
         DoctorController doctorController = new DoctorController();
         boolean saveResult = doctorController.saveDoctor(doctor);

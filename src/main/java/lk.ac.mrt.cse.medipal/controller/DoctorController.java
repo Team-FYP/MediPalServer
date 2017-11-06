@@ -41,8 +41,11 @@ public class DoctorController {
             preparedStatement.setString(5, doctor.getEmail());
             preparedStatement.setString(6, doctor.getMobile());
             preparedStatement.setString(7, Encryptor.encryptMD5(doctor.getPassword()));
-            preparedStatement.setString(8, ImageUtil.stringtoImage(doctor.getImage(),Constants.PROFILE_PIC_PREFIX+doctor.getRegistration_id(), Constants.FILE_FORMAT_JPG));
-            LOGGER.error("ajhdgsdbduk");
+            if(doctor.getImage() != null){
+                preparedStatement.setString(8, ImageUtil.stringtoImage(doctor.getImage(),Constants.PROFILE_PIC_PREFIX+doctor.getRegistration_id(), Constants.FILE_FORMAT_JPG));
+            }else {
+                preparedStatement.setString(8, null);
+            }
             status = 0 < preparedStatement.executeUpdate();
         } catch (SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error saving Doctor", ex);
