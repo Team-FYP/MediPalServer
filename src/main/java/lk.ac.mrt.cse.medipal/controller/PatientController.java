@@ -181,4 +181,39 @@ public class PatientController {
         }
         return status;
     }
+
+    public boolean updatePatient(Patient patient){
+        boolean status = false;
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL1 = "UPDATE patient SET PATIENT_NAME=?, GENDER=?, EMAIL=?, BIRTHDAY=?, CONTACT_NUMBER=?, EMERGENCY_CONTACT_NUMBER=?, PASSWORD=?, PROFILE_PICTURE=? WHERE NIC=?";
+            preparedStatement = connection.prepareStatement(SQL1);
+            preparedStatement.setString(1, patient.getName());
+            preparedStatement.setString(2, patient.getGender());
+            preparedStatement.setString(3, patient.getEmail());
+            preparedStatement.setString(4, patient.getBirthday());
+            preparedStatement.setString(5, patient.getMobile());
+            preparedStatement.setString(6, patient.getEmergency_contact());
+            preparedStatement.setString(7, Encryptor.encryptMD5(patient.getPassword()));
+            if(patient.getImage() != null){
+                preparedStatement.setString(8, ImageUtil.stringtoImage(patient.getImage(),Constants.PROFILE_PIC_PREFIX+patient.getNic(), Constants.FILE_FORMAT_JPG));
+            }else {
+                preparedStatement.setString(8, null);
+            }
+            preparedStatement.setString(9, patient.getNic());
+
+            status = 0 < preparedStatement.executeUpdate();
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error updating Patient", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return status;
+    }
 }

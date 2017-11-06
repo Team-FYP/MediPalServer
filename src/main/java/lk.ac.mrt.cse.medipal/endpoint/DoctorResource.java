@@ -120,4 +120,41 @@ public class DoctorResource {
 
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
+
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    @Path("/update")
+    public Response doctorUpdate(String request) {
+        JsonObject jsonObject = new JsonParser().parse(request).getAsJsonObject();
+        Gson gson = new Gson();
+        String registration_id = jsonObject.get("registration_id").getAsString();
+        String speciality = jsonObject.get("speciality").getAsString();
+        String name = jsonObject.get("name").getAsString();
+        String gender = jsonObject.get("gender").getAsString();
+        String email = jsonObject.get("email").getAsString();
+        String mobile = jsonObject.get("mobile").getAsString();
+        String password = jsonObject.get("password").getAsString();
+        String image;
+        if(jsonObject.get("image") != null){
+            image = jsonObject.get("image").getAsString();
+        }else {
+            image = null;
+        }
+        Doctor doctor = new Doctor(registration_id, speciality,name,gender,email,mobile,password,image);
+        DoctorController doctorController = new DoctorController();
+        JsonObject returnObject = new JsonObject();
+        boolean updateResult = doctorController.updateDoctor(doctor);
+        returnObject.addProperty("success",updateResult);
+        if(updateResult){
+            Doctor updatedDoctor = doctorController.getDoctorDetails(registration_id);
+            String doctorDetails = gson.toJson(updatedDoctor);
+            JsonObject doctorDetailObject = new JsonParser().parse(doctorDetails).getAsJsonObject();
+            returnObject.add("userData",doctorDetailObject);
+            returnObject.addProperty("message","Successfully Updated");
+        }else {
+            returnObject.addProperty("message","Updating Failed");
+        }
+        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+    }
 }

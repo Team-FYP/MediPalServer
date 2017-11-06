@@ -107,4 +107,44 @@ public class PatientResource {
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
 
+
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    @Path("/update")
+    public Response patientUpdate(String request) {
+        JsonObject jsonObject = new JsonParser().parse(request).getAsJsonObject();
+        Gson gson = new Gson();
+        String nic = jsonObject.get("nic").getAsString();
+        String name = jsonObject.get("name").getAsString();
+        String gender = jsonObject.get("gender").getAsString();
+        String email = jsonObject.get("email").getAsString();
+        String birthday = jsonObject.get("birthday").getAsString();
+        String mobile = jsonObject.get("mobile").getAsString();
+        String emergency_contact = jsonObject.get("emergency_contact").getAsString();
+        String password = jsonObject.get("password").getAsString();
+        String image;
+        if(jsonObject.get("image") != null){
+            image = jsonObject.get("image").getAsString();
+        }else {
+            image = null;
+        }
+        Patient patient = new Patient(nic,name,gender,email,birthday,mobile,emergency_contact,password,image);
+        PatientController patientController = new PatientController();
+        JsonObject returnObject = new JsonObject();
+        boolean updateResult = patientController.updatePatient(patient);
+        returnObject.addProperty("success",updateResult);
+        if(updateResult){
+            Patient updatedPatient = patientController.getPatiaentDetails(nic);
+            String patientDetails = gson.toJson(updatedPatient);
+            JsonObject patientDetailObject = new JsonParser().parse(patientDetails).getAsJsonObject();
+            returnObject.add("userData",patientDetailObject);
+            returnObject.addProperty("message","Successfully Updated");
+        }
+        else {
+            returnObject.addProperty("message","Updating Failed");
+        }
+        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+    }
+
 }
