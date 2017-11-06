@@ -44,7 +44,11 @@ public class PatientController {
             preparedStatement.setString(6, patient.getMobile());
             preparedStatement.setString(7, patient.getEmergency_contact());
             preparedStatement.setString(8, Encryptor.encryptMD5(patient.getPassword()));
-            preparedStatement.setString(9, ImageUtil.stringtoImage(patient.getImage(),Constants.PROFILE_PIC_PREFIX+patient.getNic(), Constants.FILE_FORMAT_JPG));
+            if(patient.getImage() != null){
+                preparedStatement.setString(9, ImageUtil.stringtoImage(patient.getImage(),Constants.PROFILE_PIC_PREFIX+patient.getNic(), Constants.FILE_FORMAT_JPG));
+            }else {
+                preparedStatement.setString(9, null);
+            }
 
             status = 0 < preparedStatement.executeUpdate();
         } catch (SQLException | IOException | PropertyVetoException ex) {

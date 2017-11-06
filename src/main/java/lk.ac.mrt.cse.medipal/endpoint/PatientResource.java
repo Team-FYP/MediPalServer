@@ -62,7 +62,12 @@ public class PatientResource {
         String mobile = jsonObject.get("mobile").getAsString();
         String emergency_contact = jsonObject.get("emergency_contact").getAsString();
         String password = jsonObject.get("password").getAsString();
-        String image = jsonObject.get("image").getAsString();
+        String image;
+        if(jsonObject.get("image") != null){
+            image = jsonObject.get("image").getAsString();
+        }else {
+            image = null;
+        }
         Patient patient = new Patient(nic,name,gender,email,birthday,mobile,emergency_contact,password,image);
         PatientController patientController = new PatientController();
         boolean saveResult = patientController.savePatient(patient);
