@@ -185,4 +185,29 @@ public class DoctorController {
         }
         return null;
     }
+
+    public boolean checkDuplicateDoctor(String id){
+        boolean status = false;
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL1 = "SELECT 1 FROM doctor WHERE REGISTRATION_NO=?";
+            preparedStatement = connection.prepareStatement(SQL1);
+            preparedStatement.setString(1, id);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                status = true;
+            }
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error checking duplicate doctor ", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return status;
+    }
 }

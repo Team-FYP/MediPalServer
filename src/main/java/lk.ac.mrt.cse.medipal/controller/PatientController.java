@@ -156,4 +156,29 @@ public class PatientController {
         }
         return null;
     }
+
+    public boolean checkDuplicatePatient(String nic){
+        boolean status = false;
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL1 = "SELECT 1 FROM patient WHERE NIC=?";
+            preparedStatement = connection.prepareStatement(SQL1);
+            preparedStatement.setString(1, nic);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                status = true;
+            }
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error checking duplicate patient ", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return status;
+    }
 }

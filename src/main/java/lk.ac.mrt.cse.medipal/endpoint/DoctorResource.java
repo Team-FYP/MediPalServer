@@ -70,8 +70,14 @@ public class DoctorResource {
         }
         Doctor doctor = new Doctor(registration_id, speciality,name,gender,email,mobile,password,image);
         DoctorController doctorController = new DoctorController();
-        boolean saveResult = doctorController.saveDoctor(doctor);
+        boolean checkDuplicateDoctor = doctorController.checkDuplicateDoctor(registration_id);
         JsonObject returnObject = new JsonObject();
+        if(checkDuplicateDoctor){
+            returnObject.addProperty("success",!checkDuplicateDoctor);
+            returnObject.addProperty("message","User with same ID exists");
+            return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+        }
+        boolean saveResult = doctorController.saveDoctor(doctor);
         returnObject.addProperty("success",saveResult);
         if(saveResult){
             Doctor savedDoctor = doctorController.getDoctorDetails(registration_id);
@@ -103,14 +109,14 @@ public class DoctorResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    @Path("/{id}/mypatients")
+    @Path("/{id}/patients")
     public Response allPatientsOfDoctor(@PathParam("id") String doctorID) {
         Gson gson = new Gson();
         DoctorController doctorController = new DoctorController();
         JsonObject returnObject = new JsonObject();
         ArrayList<Patient> patientsList = doctorController.getPatiaentDetailsByDoctorID(doctorID);
         JsonArray patientArray = gson.toJsonTree(patientsList).getAsJsonArray();
-        returnObject.add("patientList",patientArray);
+        returnObject.add("items",patientArray);
 
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }

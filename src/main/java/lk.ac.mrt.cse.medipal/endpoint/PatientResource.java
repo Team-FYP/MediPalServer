@@ -70,8 +70,14 @@ public class PatientResource {
         }
         Patient patient = new Patient(nic,name,gender,email,birthday,mobile,emergency_contact,password,image);
         PatientController patientController = new PatientController();
-        boolean saveResult = patientController.savePatient(patient);
+        boolean checkDuplicatePatient = patientController.checkDuplicatePatient(nic);
         JsonObject returnObject = new JsonObject();
+        if(checkDuplicatePatient){
+            returnObject.addProperty("success",!checkDuplicatePatient);
+            returnObject.addProperty("message","User with same ID exists");
+            return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+        }
+        boolean saveResult = patientController.savePatient(patient);
         returnObject.addProperty("success",saveResult);
         if(saveResult){
             Patient savedPatient = patientController.getPatiaentDetails(nic);
