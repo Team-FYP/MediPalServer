@@ -8,6 +8,7 @@ public class PrescriptionDrug {
     private String frequency;
     private String route;
     private int duration;
+    private int prescriptionID;
 
     public void setDrug(Drug drug) {
         this.drug = drug;
@@ -60,13 +61,23 @@ public class PrescriptionDrug {
 
     private Date start_date;
 
-    public PrescriptionDrug(Drug drug, String dosage, String frequency, String route, int duration, Date start_date) {
+    public PrescriptionDrug(Drug drug, String dosage, String frequency, String route, int duration, int prescriptionID, Date start_date) {
         this.drug = drug;
         this.dosage = dosage;
         this.frequency = frequency;
         this.route = route;
         this.duration = duration;
+        this.prescriptionID = prescriptionID;
+
         this.start_date = start_date;
+    }
+
+    public int getPrescriptionID() {
+        return prescriptionID;
+    }
+
+    public void setPrescriptionID(int prescriptionID) {
+        this.prescriptionID = prescriptionID;
     }
 
     public PrescriptionDrug() {

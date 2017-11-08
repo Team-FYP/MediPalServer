@@ -21,14 +21,14 @@ public class PrescriptionDrugController {
     private static Connection connection;
     public static Logger LOGGER = org.apache.log4j.Logger.getLogger(PrescriptionDrugController.class);
 
-    public ArrayList<PrescriptionDrug> getDrugsByPrescription(String prescriptionID){
+    public ArrayList<PrescriptionDrug> getDrugsByPrescription(int prescriptionID){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL = "SELECT drug.drug_id, drug.drug_name, drug.category_id, drug_prescription.Dosage, drug_prescription.Frequency, drug_prescription.Route, drug_prescription.Duration FROM  " +
                     "`drug` INNER JOIN drug_prescription ON drug.drug_id = drug_prescription.Drug_ID " +
                     "AND `drug_prescription`.`Prescription_ID` = ?";
             preparedStatement = connection.prepareStatement(SQL);
-            preparedStatement.setString(1, prescriptionID);
+            preparedStatement.setInt(1, prescriptionID);
             resultSet = preparedStatement.executeQuery();
             ArrayList<PrescriptionDrug> prescriptionDrugsList = new ArrayList<>();
             while (resultSet.next()){
