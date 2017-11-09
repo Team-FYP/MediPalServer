@@ -1,5 +1,7 @@
 package lk.ac.mrt.cse.medipal.model;
 
+import java.util.Date;
+
 /**
  * Created by Lakshan on 2017-06-01.
  */

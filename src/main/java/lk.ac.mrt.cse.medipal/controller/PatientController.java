@@ -14,8 +14,12 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by lakshan on 9/19/17.
@@ -40,7 +44,8 @@ public class PatientController {
             preparedStatement.setString(2, patient.getName());
             preparedStatement.setString(3, patient.getGender());
             preparedStatement.setString(4, patient.getEmail());
-            preparedStatement.setString(5, patient.getBirthday());
+            Date birthday = java.sql.Date.valueOf(patient.getBirthday());
+            preparedStatement.setDate(5, birthday);
             preparedStatement.setString(6, patient.getMobile());
             preparedStatement.setString(7, patient.getEmergency_contact());
             preparedStatement.setString(8, Encryptor.encryptMD5(patient.getPassword()));
@@ -103,7 +108,8 @@ public class PatientController {
                 patient.setName(resultSet.getString("PATIENT_NAME"));
                 patient.setGender(resultSet.getString("GENDER"));
                 patient.setEmail(resultSet.getString("EMAIL"));
-                patient.setBirthday(resultSet.getString("BIRTHDAY"));
+                String bday=resultSet.getDate("BIRTHDAY").toString();
+                patient.setBirthday(bday);
                 patient.setMobile(resultSet.getString("CONTACT_NUMBER"));
                 patient.setEmergency_contact(resultSet.getString("EMERGENCY_CONTACT_NUMBER"));
                 patient.setImage(resultSet.getString("PROFILE_PICTURE"));
@@ -136,7 +142,8 @@ public class PatientController {
                 patient.setName(resultSet.getString("PATIENT_NAME"));
                 patient.setGender(resultSet.getString("GENDER"));
                 patient.setEmail(resultSet.getString("EMAIL"));
-                patient.setBirthday(resultSet.getString("BIRTHDAY"));
+                String bday=resultSet.getDate("BIRTHDAY").toString();
+                patient.setBirthday(bday);
                 patient.setMobile(resultSet.getString("CONTACT_NUMBER"));
                 patient.setEmergency_contact(resultSet.getString("EMERGENCY_CONTACT_NUMBER"));
                 patient.setImage(resultSet.getString("PROFILE_PICTURE"));
@@ -191,7 +198,8 @@ public class PatientController {
             preparedStatement.setString(1, patient.getName());
             preparedStatement.setString(2, patient.getGender());
             preparedStatement.setString(3, patient.getEmail());
-            preparedStatement.setString(4, patient.getBirthday());
+            Date birthday = java.sql.Date.valueOf(patient.getBirthday());
+            preparedStatement.setDate(4, birthday);
             preparedStatement.setString(5, patient.getMobile());
             preparedStatement.setString(6, patient.getEmergency_contact());
             preparedStatement.setString(7, Encryptor.encryptMD5(patient.getPassword()));

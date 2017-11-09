@@ -165,7 +165,8 @@ public class DoctorController {
                 patient.setName(resultSet.getString("PATIENT_NAME"));
                 patient.setGender(resultSet.getString("GENDER"));
                 patient.setEmail(resultSet.getString("EMAIL"));
-                patient.setBirthday(resultSet.getString("BIRTHDAY"));
+                String bday=resultSet.getDate("BIRTHDAY").toString();
+                patient.setBirthday(bday);
                 patient.setMobile(resultSet.getString("CONTACT_NUMBER"));
                 patient.setEmergency_contact(resultSet.getString("EMERGENCY_CONTACT_NUMBER"));
                 patient.setImage(resultSet.getString("PROFILE_PICTURE"));

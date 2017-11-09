@@ -14,7 +14,11 @@ import javax.ws.rs.core.Response;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by lakshan on 9/19/17.
@@ -51,7 +55,7 @@ public class PatientResource {
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     @Path("/signup")
-    public Response patientSignUp(String request) {
+    public Response patientSignUp(String request) throws ParseException {
         JsonObject jsonObject = new JsonParser().parse(request).getAsJsonObject();
         Gson gson = new Gson();
         String nic = jsonObject.get("nic").getAsString();
