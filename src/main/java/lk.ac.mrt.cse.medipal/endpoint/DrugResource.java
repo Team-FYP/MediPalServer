@@ -51,17 +51,18 @@ public class DrugResource {
 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @GET
+    @POST
     @Path("/adddrug")
-    public Response addDrug() {
+    public Response addDrug(String request) {
+        JsonObject jsonObject = new JsonParser().parse(request).getAsJsonObject();
         Gson gson = new Gson();
+        String drug_id = jsonObject.get("drug_id").getAsString();
+        String drug_name = jsonObject.get("drug_name").getAsString();
+        String category = jsonObject.get("category").getAsString();
+        String disease_id = jsonObject.get("disease_id").getAsString();
         DrugController drugController = new DrugController();
         JsonObject returnObject = new JsonObject();
-        Drug drug = new Drug();
-        drug.setDrug_id("90");
-        drug.setDrug_name("testDrug");
-        drug.setCategory_id("1");
-        drug.setDisease_id("1");
+        Drug drug = new Drug(drug_id, drug_name,category, disease_id);
         boolean drugDetail = drugController.addDrug(drug);
         returnObject.addProperty("drugDetails", drugDetail);
 

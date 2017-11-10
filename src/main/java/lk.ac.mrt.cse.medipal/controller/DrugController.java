@@ -25,11 +25,11 @@ public class DrugController {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL = "SELECT * FROM  `drug` WHERE `drug_id` = ?";
             preparedStatement = connection.prepareStatement(SQL);
-            preparedStatement.setString(1, drugID);
+            preparedStatement.setInt(1, Integer.parseInt(drugID));
             resultSet = preparedStatement.executeQuery();
             Drug drug = new Drug();
             if (resultSet.next()){
-                drug.setDrug_id(resultSet.getString("drug_id"));
+                drug.setDrug_id(String.valueOf(resultSet.getInt("drug_id")));
                 drug.setDrug_name(resultSet.getString("drug_name"));
                 drug.setCategory_id(resultSet.getString("category_id"));
                 return drug;
@@ -57,7 +57,7 @@ public class DrugController {
             ArrayList<Drug> drugList = new ArrayList<Drug>();
             while (resultSet.next()){
                 Drug drug = new Drug();
-                drug.setDrug_id(resultSet.getString("drug_id"));
+                drug.setDrug_id(String.valueOf(resultSet.getInt("drug_id")));
                 drug.setDrug_name(resultSet.getString("drug_name"));
                 drug.setCategory_id(resultSet.getString("category_id"));
                 drugList.add(drug);
@@ -87,7 +87,7 @@ public class DrugController {
             ArrayList<Drug> drugList = new ArrayList<Drug>();
             while (resultSet.next()){
                 Drug drug = new Drug();
-                drug.setDrug_id(resultSet.getString("drug_id"));
+                drug.setDrug_id(String.valueOf(resultSet.getInt("drug_id")));
                 drug.setDrug_name(resultSet.getString("drug_name"));
                 drug.setCategory_id(resultSet.getString("category_id"));
                 drugList.add(drug);
@@ -169,22 +169,25 @@ public class DrugController {
 
     public boolean addDrug(Drug drug){
         boolean status = false;
+        PreparedStatement preparedStatementDisease;
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String DRUGSQL = "INSERT INTO `drug` (`drug_id`,`drug_name`,`category_id`) VALUES (?, ?, ?) ";
             preparedStatement = connection.prepareStatement(DRUGSQL);
-            preparedStatement.setString(1, drug.getDrug_id());
+            preparedStatement.setInt(1, Integer.parseInt(drug.getDrug_id()));
             preparedStatement.setString(2, drug.getDrug_name());
             preparedStatement.setString(3, drug.getCategory_id());
-            resultSet = preparedStatement.executeQuery();
-//            preparedStatement.executeUpdate();
-//            preparedStatement.close();
-//            String DISEASESQL = "INSERT INTO `drug_disease` (`Drug`,`Disease`) VALUES (?, ?) ";
-//            preparedStatement = connection.prepareStatement(DISEASESQL);
-//            preparedStatement.setString(1, drug.getDrug_id());
-//            preparedStatement.setString(2, drug.getDisease_id());
-//            resultSet = preparedStatement.executeQuery();
-            status = 0 < preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate();
+            ResultSet keys = preparedStatement.getGeneratedKeys();
+            keys.next();
+            int key = keys.getInt(1);
+            preparedStatement.close();
+
+            String DISEASESQL = "INSERT INTO `drug_disease` (`Drug`,`Disease`) VALUES (?, ?) ";
+            preparedStatementDisease = connection.prepareStatement(DISEASESQL);
+            preparedStatementDisease.setInt(1, key);
+            preparedStatementDisease.setString(2, drug.getDisease_id());
+            status = 0 < preparedStatementDisease.executeUpdate();
         } catch (SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error saving drug", ex);
         } finally {
