@@ -89,7 +89,7 @@ public class PrescriptionController {
             preparedStatement.close();
 //
             String SQLDRUGS = "INSERT INTO `drug_prescription` " +
-                    " (`DRUG_ID`, `PRESCRIPTION_ID`,`DOSAGE`,`FREQUENCY`,`ROUTE`,`DURATION`) VALUES (?, ?, ?, ?, ?, ?)";
+                    " (`DRUG_ID`, `PRESCRIPTION_ID`,`DOSAGE`,`FREQUENCY`,`ROUTE`,`DURATION`, `USE_TIME`) VALUES (?, ?, ?, ?, ?, ?, ?)";
             preparedStatementDrug = connection.prepareStatement(SQLDRUGS, Statement.RETURN_GENERATED_KEYS);
             for (PrescriptionDrug drug:prescription.getPrescription_drugs()
                  ) {
@@ -99,6 +99,7 @@ public class PrescriptionController {
                 preparedStatementDrug.setString(4, drug.getFrequency());
                 preparedStatementDrug.setString(5, drug.getRoute());
                 preparedStatementDrug.setInt(6, drug.getDuration());
+                preparedStatementDrug.setString(7, drug.getUseTime());
                 preparedStatementDrug.executeUpdate();
             }
 
@@ -123,7 +124,7 @@ public class PrescriptionController {
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL = "SELECT drug.drug_name, drug.category_id,drug_prescription.Drug_ID, drug_prescription.Prescription_ID, drug_prescription.Dosage, drug_prescription.Frequency, " +
-                    "drug_prescription.Route, drug_prescription.Duration, prescription.DATE, prescription.DISEASE_DISEASE_ID, prescription.DOCTOR_ID " +
+                    "drug_prescription.Route, drug_prescription.Duration, drug_prescription.Use_Time, prescription.DATE, prescription.DISEASE_DISEASE_ID, prescription.DOCTOR_ID " +
                     "FROM drug INNER JOIN drug_prescription ON drug.drug_id=drug_prescription.Drug_ID INNER JOIN prescription ON drug_prescription.Prescription_ID=prescription.PRESCRIPTION_ID " +
                     "AND prescription.PATIENT_NIC=?";
             preparedStatement = connection.prepareStatement(SQL);
@@ -145,6 +146,7 @@ public class PrescriptionController {
                     prescriptionDrug.setFrequency(resultSet.getString("Frequency"));
                     prescriptionDrug.setRoute(resultSet.getString("Route"));
                     prescriptionDrug.setDuration(resultSet.getInt("Duration"));
+                    prescriptionDrug.setUseTime(resultSet.getString("Use_Time"));
                     prescriptionDrugsList.add(prescriptionDrug);
                 }
             }
@@ -169,7 +171,7 @@ public class PrescriptionController {
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL = "SELECT drug.drug_name, drug.category_id,drug_prescription.Drug_ID, drug_prescription.Prescription_ID, drug_prescription.Dosage, drug_prescription.Frequency, " +
-                    "drug_prescription.Route, drug_prescription.Duration, prescription.DATE, prescription.DISEASE_DISEASE_ID, prescription.DOCTOR_ID " +
+                    "drug_prescription.Route, drug_prescription.Duration, drug_prescription.Use_Time, prescription.DATE, prescription.DISEASE_DISEASE_ID, prescription.DOCTOR_ID " +
                     "FROM drug INNER JOIN drug_prescription ON drug.drug_id=drug_prescription.Drug_ID INNER JOIN prescription ON drug_prescription.Prescription_ID=prescription.PRESCRIPTION_ID " +
                     "AND prescription.PATIENT_NIC=? AND prescription.DISEASE_DISEASE_ID=? ORDER BY drug_prescription.Prescription_ID";
             preparedStatement = connection.prepareStatement(SQL);
@@ -189,6 +191,7 @@ public class PrescriptionController {
             lastPrescription.setFrequency(resultSet.getString("Frequency"));
             lastPrescription.setRoute(resultSet.getString("Route"));
             lastPrescription.setDuration(resultSet.getInt("Duration"));
+            lastPrescription.setUseTime(resultSet.getString("Use_Time"));
             return lastPrescription;
         } catch (SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error getting patients last prescription for this disease", ex);

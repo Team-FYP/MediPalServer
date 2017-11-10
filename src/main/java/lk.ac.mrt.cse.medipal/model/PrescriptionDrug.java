@@ -9,6 +9,23 @@ public class PrescriptionDrug {
     private String route;
     private int duration;
     private int prescriptionID;
+    private String useTime;
+
+    public PrescriptionDrug(Drug drug, String dosage, String frequency, String route, int duration, int prescriptionID, String useTime, Date start_date) {
+        this.drug = drug;
+        this.dosage = dosage;
+        this.frequency = frequency;
+        this.route = route;
+        this.duration = duration;
+        this.prescriptionID = prescriptionID;
+        this.useTime = useTime;
+
+        this.start_date = start_date;
+    }
+
+    public String getUseTime() {
+        return useTime;
+    }
 
     public void setDrug(Drug drug) {
         this.drug = drug;
@@ -61,15 +78,8 @@ public class PrescriptionDrug {
 
     private Date start_date;
 
-    public PrescriptionDrug(Drug drug, String dosage, String frequency, String route, int duration, int prescriptionID, Date start_date) {
-        this.drug = drug;
-        this.dosage = dosage;
-        this.frequency = frequency;
-        this.route = route;
-        this.duration = duration;
-        this.prescriptionID = prescriptionID;
-
-        this.start_date = start_date;
+    public void setUseTime(String useTime) {
+        this.useTime = useTime;
     }
 
     public int getPrescriptionID() {

@@ -24,7 +24,7 @@ public class PrescriptionDrugController {
     public ArrayList<PrescriptionDrug> getDrugsByPrescription(int prescriptionID){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
-            String SQL = "SELECT drug.drug_id, drug.drug_name, drug.category_id, drug_prescription.Dosage, drug_prescription.Frequency, drug_prescription.Route, drug_prescription.Duration FROM  " +
+            String SQL = "SELECT drug.drug_id, drug.drug_name, drug.category_id, drug_prescription.Dosage, drug_prescription.Frequency, drug_prescription.Route, drug_prescription.Duration, drug_prescription.Use_Time FROM  " +
                     "`drug` INNER JOIN drug_prescription ON drug.drug_id = drug_prescription.Drug_ID " +
                     "AND `drug_prescription`.`Prescription_ID` = ?";
             preparedStatement = connection.prepareStatement(SQL);
@@ -42,6 +42,7 @@ public class PrescriptionDrugController {
                 prescriptionDrug.setFrequency(resultSet.getString("Frequency"));
                 prescriptionDrug.setRoute(resultSet.getString("Route"));
                 prescriptionDrug.setDuration(resultSet.getInt("Duration"));
+                prescriptionDrug.setUseTime(resultSet.getString("Use_Time"));
                 prescriptionDrugsList.add(prescriptionDrug);
             }
             return prescriptionDrugsList;

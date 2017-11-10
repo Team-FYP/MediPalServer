@@ -77,12 +77,14 @@ public class PrescriptionResource {
         prescriptionDrug1.setFrequency("3");
         prescriptionDrug1.setRoute("MOuth");
         prescriptionDrug1.setDuration(3);
+        prescriptionDrug1.setUseTime("After Meal");
         prescriptionDrugsArray.add(prescriptionDrug1);
         prescriptionDrug2.setDrug(drug2);
         prescriptionDrug2.setDosage("3");
         prescriptionDrug2.setFrequency("3");
         prescriptionDrug2.setRoute("MOuth");
         prescriptionDrug2.setDuration(3);
+        prescriptionDrug2.setUseTime("After Meal");
         prescriptionDrugsArray.add(prescriptionDrug2);
 //        prescriptionDrug.setDrug(drug1);
 //        prescriptionDrugsArray.add(prescriptionDrug);
