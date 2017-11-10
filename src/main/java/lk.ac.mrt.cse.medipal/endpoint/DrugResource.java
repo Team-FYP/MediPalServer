@@ -53,7 +53,7 @@ public class DrugResource {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/adddrug")
-    public Response getDrug() {
+    public Response addDrug() {
         Gson gson = new Gson();
         DrugController drugController = new DrugController();
         JsonObject returnObject = new JsonObject();

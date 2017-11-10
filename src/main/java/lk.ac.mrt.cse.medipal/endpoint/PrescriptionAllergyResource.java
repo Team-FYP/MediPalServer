@@ -15,7 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 
-@Path("/allergy")
+@Path("/prescription/allergy")
 public class PrescriptionAllergyResource {
     public static Logger logger = Logger.getLogger(PatientResource.class);
     @Consumes(MediaType.APPLICATION_JSON)
@@ -28,7 +28,7 @@ public class PrescriptionAllergyResource {
         JsonObject returnObject = new JsonObject();
         ArrayList<PrescriptionAllergy> prescriptionAllergiesArray= prescriptionAllergyController.getPrescriptionAllergiesByPatient(patient_id);
         JsonArray prescriptionAllergies = gson.toJsonTree(prescriptionAllergiesArray).getAsJsonArray();
-        returnObject.add("allergyDetails", prescriptionAllergies);
+        returnObject.add("prescriptionAllergyDetails", prescriptionAllergies);
 
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
