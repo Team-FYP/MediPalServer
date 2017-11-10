@@ -127,5 +127,21 @@ public class PrescriptionResource {
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
 
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/patient/{id}/lastprescription/{disease}")
+    public Response getCurrentPrescriptionsForDisease(@PathParam("id") String patientID, @PathParam("disease") int diseaseID) {
+        Gson gson = new Gson();
+        PrescriptionController prescriptionController = new PrescriptionController();
+        JsonObject returnObject = new JsonObject();
+        PrescriptionDrug lastPrescriptionsDrugs = prescriptionController.getLastPrescriptionForDisease(patientID, diseaseID);
+        String lastPrescriptionsDetails = gson.toJson(lastPrescriptionsDrugs);
+        JsonObject prescriptionDetailObject = new JsonParser().parse(lastPrescriptionsDetails).getAsJsonObject();
+        returnObject.add("lastPrescriptionsForDisease",prescriptionDetailObject);
+
+        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+    }
+
 
 }

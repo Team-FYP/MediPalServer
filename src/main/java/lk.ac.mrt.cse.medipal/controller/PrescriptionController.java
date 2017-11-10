@@ -163,4 +163,44 @@ public class PrescriptionController {
         return null;
     }
 
+    public PrescriptionDrug getLastPrescriptionForDisease(String patientID, int diseaseID){
+        java.sql.Date today = new java.sql.Date(Calendar.getInstance().getTime().getTime());
+
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "SELECT drug.drug_name, drug.category_id,drug_prescription.Drug_ID, drug_prescription.Prescription_ID, drug_prescription.Dosage, drug_prescription.Frequency, " +
+                    "drug_prescription.Route, drug_prescription.Duration, prescription.DATE, prescription.DISEASE_DISEASE_ID, prescription.DOCTOR_ID " +
+                    "FROM drug INNER JOIN drug_prescription ON drug.drug_id=drug_prescription.Drug_ID INNER JOIN prescription ON drug_prescription.Prescription_ID=prescription.PRESCRIPTION_ID " +
+                    "AND prescription.PATIENT_NIC=? AND prescription.DISEASE_DISEASE_ID=? ORDER BY drug_prescription.Prescription_ID";
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setString(1, patientID);
+            preparedStatement.setInt(2, diseaseID);
+            resultSet = preparedStatement.executeQuery();
+            PrescriptionDrug lastPrescription = new PrescriptionDrug();
+
+            resultSet.last();
+            Drug drug = new Drug();
+            drug.setDrug_id(resultSet.getString("Drug_ID"));
+            drug.setDrug_name(resultSet.getString("drug_name"));
+            drug.setCategory_id(resultSet.getString("category_id"));
+            lastPrescription.setDrug(drug);
+            lastPrescription.setPrescriptionID(resultSet.getInt("Prescription_ID"));
+            lastPrescription.setDosage(resultSet.getString("Dosage"));
+            lastPrescription.setFrequency(resultSet.getString("Frequency"));
+            lastPrescription.setRoute(resultSet.getString("Route"));
+            lastPrescription.setDuration(resultSet.getInt("Duration"));
+            return lastPrescription;
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting patients last prescription for this disease", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return null;
+    }
 }
