@@ -89,7 +89,7 @@ public class PrescriptionController {
             preparedStatement.close();
 //
             String SQLDRUGS = "INSERT INTO `drug_prescription` " +
-                    " (`DRUG_ID`, `PRESCRIPTION_ID`,`DOSAGE`,`FREQUENCY`,`ROUTE`,`DURATION`, `USE_TIME`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                    " (`DRUG_ID`, `PRESCRIPTION_ID`,`DOSAGE`,`FREQUENCY`,`ROUTE`,`DURATION`, `USE_TIME`, `Unit_Size`, `Start_Date`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             preparedStatementDrug = connection.prepareStatement(SQLDRUGS, Statement.RETURN_GENERATED_KEYS);
             for (PrescriptionDrug drug:prescription.getPrescription_drugs()
                  ) {
@@ -100,6 +100,9 @@ public class PrescriptionController {
                 preparedStatementDrug.setString(5, drug.getRoute());
                 preparedStatementDrug.setInt(6, drug.getDuration());
                 preparedStatementDrug.setString(7, drug.getUseTime());
+                preparedStatementDrug.setString(8, drug.getUnitSize());
+                Date startDate = java.sql.Date.valueOf(drug.getStartDate());
+                preparedStatementDrug.setDate(7, startDate);
                 preparedStatementDrug.executeUpdate();
             }
 
@@ -124,7 +127,7 @@ public class PrescriptionController {
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL = "SELECT drug.drug_name, drug.category_id,drug_prescription.Drug_ID, drug_prescription.Prescription_ID, drug_prescription.Dosage, drug_prescription.Frequency, " +
-                    "drug_prescription.Route, drug_prescription.Duration, drug_prescription.Use_Time, prescription.DATE, prescription.DISEASE_DISEASE_ID, prescription.DOCTOR_ID " +
+                    "drug_prescription.Route, drug_prescription.Duration, drug_prescription.Use_Time, drug_prescription.Unit_Size, drug_prescription.Start_Date, prescription.DATE, prescription.DISEASE_DISEASE_ID, prescription.DOCTOR_ID " +
                     "FROM drug INNER JOIN drug_prescription ON drug.drug_id=drug_prescription.Drug_ID INNER JOIN prescription ON drug_prescription.Prescription_ID=prescription.PRESCRIPTION_ID " +
                     "AND prescription.PATIENT_NIC=?";
             preparedStatement = connection.prepareStatement(SQL);
@@ -147,6 +150,9 @@ public class PrescriptionController {
                     prescriptionDrug.setRoute(resultSet.getString("Route"));
                     prescriptionDrug.setDuration(resultSet.getInt("Duration"));
                     prescriptionDrug.setUseTime(resultSet.getString("Use_Time"));
+                    prescriptionDrug.setUnitSize(resultSet.getString("Unit_size"));
+                    String startDate=resultSet.getDate("Start_Date").toString();
+                    prescriptionDrug.setStartDate(startDate);
                     prescriptionDrugsList.add(prescriptionDrug);
                 }
             }
@@ -171,7 +177,7 @@ public class PrescriptionController {
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL = "SELECT drug.drug_name, drug.category_id,drug_prescription.Drug_ID, drug_prescription.Prescription_ID, drug_prescription.Dosage, drug_prescription.Frequency, " +
-                    "drug_prescription.Route, drug_prescription.Duration, drug_prescription.Use_Time, prescription.DATE, prescription.DISEASE_DISEASE_ID, prescription.DOCTOR_ID " +
+                    "drug_prescription.Route, drug_prescription.Duration, drug_prescription.Use_Time, drug_prescription.Unit_Size, drug_prescription.Start_Date, prescription.DATE, prescription.DISEASE_DISEASE_ID, prescription.DOCTOR_ID " +
                     "FROM drug INNER JOIN drug_prescription ON drug.drug_id=drug_prescription.Drug_ID INNER JOIN prescription ON drug_prescription.Prescription_ID=prescription.PRESCRIPTION_ID " +
                     "AND prescription.PATIENT_NIC=? AND prescription.DISEASE_DISEASE_ID=? ORDER BY drug_prescription.Prescription_ID";
             preparedStatement = connection.prepareStatement(SQL);
@@ -192,6 +198,9 @@ public class PrescriptionController {
             lastPrescription.setRoute(resultSet.getString("Route"));
             lastPrescription.setDuration(resultSet.getInt("Duration"));
             lastPrescription.setUseTime(resultSet.getString("Use_Time"));
+            lastPrescription.setUnitSize(resultSet.getString("Unit_Size"));
+            String startDate=resultSet.getDate("Start_Date").toString();
+            lastPrescription.setStartDate(startDate);
             return lastPrescription;
         } catch (SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error getting patients last prescription for this disease", ex);

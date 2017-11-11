@@ -1,7 +1,5 @@
 package lk.ac.mrt.cse.medipal.model;
 
-import java.util.Date;
-
 public class PrescriptionDrug {
     private Drug drug;
     private String dosage;
@@ -10,8 +8,10 @@ public class PrescriptionDrug {
     private int duration;
     private int prescriptionID;
     private String useTime;
+    private String unitSize;
+    private String startDate;
 
-    public PrescriptionDrug(Drug drug, String dosage, String frequency, String route, int duration, int prescriptionID, String useTime, Date start_date) {
+    public PrescriptionDrug(Drug drug, String dosage, String frequency, String route, int duration, int prescriptionID, String useTime, String startDate) {
         this.drug = drug;
         this.dosage = dosage;
         this.frequency = frequency;
@@ -19,8 +19,24 @@ public class PrescriptionDrug {
         this.duration = duration;
         this.prescriptionID = prescriptionID;
         this.useTime = useTime;
+        this.startDate = startDate;
 
-        this.start_date = start_date;
+    }
+
+    public String getUnitSize() {
+        return unitSize;
+    }
+
+    public void setUnitSize(String unitSize) {
+        this.unitSize = unitSize;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
     }
 
     public String getUseTime() {
@@ -47,12 +63,7 @@ public class PrescriptionDrug {
         this.duration = duration;
     }
 
-    public void setStart_date(Date start_date) {
-        this.start_date = start_date;
-    }
-
     public Drug getDrug() {
-
         return drug;
     }
 
@@ -71,12 +82,6 @@ public class PrescriptionDrug {
     public int getDuration() {
         return duration;
     }
-
-    public Date getStart_date() {
-        return start_date;
-    }
-
-    private Date start_date;
 
     public void setUseTime(String useTime) {
         this.useTime = useTime;

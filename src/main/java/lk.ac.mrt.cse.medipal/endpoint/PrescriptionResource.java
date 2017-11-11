@@ -78,6 +78,8 @@ public class PrescriptionResource {
         prescriptionDrug1.setRoute("MOuth");
         prescriptionDrug1.setDuration(3);
         prescriptionDrug1.setUseTime("After Meal");
+        prescriptionDrug1.setUnitSize("50mg");
+        prescriptionDrug1.setStartDate("2017-11-05");
         prescriptionDrugsArray.add(prescriptionDrug1);
         prescriptionDrug2.setDrug(drug2);
         prescriptionDrug2.setDosage("3");
@@ -85,6 +87,8 @@ public class PrescriptionResource {
         prescriptionDrug2.setRoute("MOuth");
         prescriptionDrug2.setDuration(3);
         prescriptionDrug2.setUseTime("After Meal");
+        prescriptionDrug2.setUnitSize("50mg");
+        prescriptionDrug2.setStartDate("2017-11-05");
         prescriptionDrugsArray.add(prescriptionDrug2);
 //        prescriptionDrug.setDrug(drug1);
 //        prescriptionDrugsArray.add(prescriptionDrug);
