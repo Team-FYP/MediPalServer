@@ -167,7 +167,37 @@ public class DrugController {
         }
         return null;
     }
-
+    public ArrayList<String> getRecentDrugsByDisease(String patientID, String diseaseID){
+        try {
+            ArrayList<String> recentDrugList = new ArrayList<String>();
+            PrescriptionController prescriptionController = new PrescriptionController();
+            String lastPrescriptionId = prescriptionController.getLastPrescriptionIdByDisease(patientID, diseaseID);
+            if(lastPrescriptionId == null || lastPrescriptionId == ""){
+                return null;
+            }
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "SELECT drug.drug_name FROM drug_prescription " +
+                    "INNER JOIN drug ON drug_prescription.Drug_ID=drug.drug_id " +
+                    "AND drug_prescription.Prescription_ID="+lastPrescriptionId;
+            preparedStatement = connection.prepareStatement(SQL);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                recentDrugList.add(resultSet.getString("drug_name"));
+            }
+            return recentDrugList;
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting last prescriptionId by disease", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return null;
+    }
     public boolean addDrug(Drug drug){
         boolean status = false;
         PreparedStatement preparedStatementDisease;
