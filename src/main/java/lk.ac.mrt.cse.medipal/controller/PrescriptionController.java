@@ -133,8 +133,8 @@ public class PrescriptionController {
             resultSet = preparedStatement.executeQuery();
             ArrayList<PrescriptionDrug> prescriptionDrugsList = new ArrayList<>();
             while (resultSet.next()){
-                java.sql.Date prescription_date = resultSet.getDate("DATE");
-                long date_diff = daysBetween(today, prescription_date);
+                java.sql.Date start_date = resultSet.getDate("Start_Date");
+                long date_diff = daysBetween(today, start_date);
                 if(date_diff <= resultSet.getInt("Duration")){
                     Drug drug = new Drug();
                     PrescriptionDrug prescriptionDrug = new PrescriptionDrug();
