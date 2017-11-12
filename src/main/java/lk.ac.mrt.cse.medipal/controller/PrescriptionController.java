@@ -197,8 +197,8 @@ public class PrescriptionController {
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL1 = "SELECT prescription.PRESCRIPTION_ID" +
-                    "FROM prescription" +
-                    "WHERE prescription.PATIENT_NIC=? AND prescription.DISEASE_DISEASE_ID=? ORDER BY drug_prescription.Prescription_ID";
+                    " FROM prescription" +
+                    " WHERE prescription.PATIENT_NIC=? AND prescription.DISEASE_DISEASE_ID=? ORDER BY prescription.PRESCRIPTION_ID";
 
             preparedStatement = connection.prepareStatement(SQL1);
             preparedStatement.setString(1, patientID);
@@ -209,7 +209,7 @@ public class PrescriptionController {
             PrescriptionDrug lastPrescriptionDrug = new PrescriptionDrug();
             Prescription lastPrescription = new Prescription();
             int prescriptionID = resultSet.getInt("Prescription_ID");
-            lastPrescriptionDrug.setPrescriptionID(prescriptionID);
+            lastPrescription.setPrescription_id(prescriptionID);
             resultSet.close();
 
             String SQL = "SELECT drug.drug_name, drug.category_id,drug_prescription.Drug_ID, drug_prescription.Prescription_ID, drug_prescription.Dosage, drug_prescription.Frequency," +
@@ -219,8 +219,7 @@ public class PrescriptionController {
 
 
             preparedStatementPrescription = connection.prepareStatement(SQL);
-//            preparedStatementPrescription.setInt(1, prescriptionID);
-            preparedStatementPrescription.setInt(1, 58);
+            preparedStatementPrescription.setInt(1, prescriptionID);
             resultSetPrescription = preparedStatementPrescription.executeQuery();
 
 
