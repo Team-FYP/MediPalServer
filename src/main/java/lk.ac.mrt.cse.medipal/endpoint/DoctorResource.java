@@ -116,7 +116,7 @@ public class DoctorResource {
         JsonObject returnObject = new JsonObject();
         ArrayList<Patient> patientsList = doctorController.getPatiaentDetailsByDoctorID(doctorID);
         JsonArray patientArray = gson.toJsonTree(patientsList).getAsJsonArray();
-        returnObject.add("items",patientArray);
+        returnObject.add("itemsList",patientArray);
 
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }

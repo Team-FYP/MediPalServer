@@ -1,14 +1,9 @@
 package lk.ac.mrt.cse.medipal.endpoint;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import lk.ac.mrt.cse.medipal.controller.DoctorController;
-import lk.ac.mrt.cse.medipal.controller.PatientController;
-import lk.ac.mrt.cse.medipal.controller.PrescriptionController;
-import lk.ac.mrt.cse.medipal.controller.PrescriptionDrugController;
+import com.google.gson.*;
+import lk.ac.mrt.cse.medipal.controller.*;
 import lk.ac.mrt.cse.medipal.model.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.ws.rs.*;
@@ -60,6 +55,7 @@ public class PrescriptionResource {
         Gson gson = new Gson();
         Patient patient = new Patient();
         int prescriptionID = 0;
+        DrugController drugController = new DrugController();
         Doctor doctor = new Doctor();
         Drug drug1 = new Drug("1", "Metformin", "1","1");
         Drug drug2 = new Drug("4", "Glynase", "2    ","1");
@@ -70,7 +66,6 @@ public class PrescriptionResource {
         String disease_id = jsonObject.get("disease_id").getAsString();
         String doctor_id = jsonObject.get("doctor_id").getAsString();
         doctor.setRegistration_id(jsonObject.get("doctor_id").getAsString());
-        JsonArray jsonArray = jsonObject.getAsJsonArray("drugs");
 
         prescriptionDrug1.setDrug(drug1);
         prescriptionDrug1.setDosage("3");
@@ -90,14 +85,26 @@ public class PrescriptionResource {
         prescriptionDrug2.setUnitSize("50mg");
         prescriptionDrug2.setStartDate("2017-11-05");
         prescriptionDrugsArray.add(prescriptionDrug2);
-//        prescriptionDrug.setDrug(drug1);
-//        prescriptionDrugsArray.add(prescriptionDrug);
-//        if (jsonObject.get("drugs") != null) {
-//            int len = jsonArray.size();
-//            for (int i=0;i<len;i++){
-//                prescriptionDrug.setDrug(jsonArray.get(i));
-//            }
+
+//        JSONObject jsonObj = new JSONObject(jsonObject);
+//
+//        JSONArray ja_data = jsonObj.getJSONArray("prescription_drugs");
+//        int length = ja_data.length();
+//        for(int i=0; i<length; i++) {
+//            JSONObject job = ja_data.getJSONObject(i);
+//            PrescriptionDrug prescriptionDrug = new PrescriptionDrug();
+//            prescriptionDrug.setDrug(drug1);
+//            prescriptionDrug.setDosage(job.getString("dosage"));
+//            prescriptionDrug.setFrequency(job.getString("frequency"));
+//            prescriptionDrug.setRoute(job.getString("route"));
+//            prescriptionDrug.setDuration(job.getInt("duration"));
+//            prescriptionDrug.setUseTime(job.getString("useTime"));
+//            prescriptionDrug.setStartDate(job.getString("startDate"));
+//            prescriptionDrugsArray.add(prescriptionDrug);
 //        }
+
+
+
 
         Prescription prescription = new Prescription(prescriptionID,prescriptionDrugsArray,doctor,patient,disease_id,doctor_id, null);
         PrescriptionController prescriptionController = new PrescriptionController();
@@ -115,6 +122,7 @@ public class PrescriptionResource {
         else {
             returnObject.addProperty("message","Saving Failed");
         }
+        returnObject.addProperty("size",4);
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
 
@@ -128,7 +136,7 @@ public class PrescriptionResource {
         JsonObject returnObject = new JsonObject();
         ArrayList<PrescriptionDrug> prescriptionsDrugsList = prescriptionController.getCurrentPrescriptions(patientID);
         JsonArray prescriptionsDrugsArray = gson.toJsonTree(prescriptionsDrugsList).getAsJsonArray();
-        returnObject.add("currentPrescriptionsList",prescriptionsDrugsArray);
+        returnObject.add("itemsList",prescriptionsDrugsArray);
 
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
@@ -144,7 +152,7 @@ public class PrescriptionResource {
         PrescriptionDrug lastPrescriptionsDrugs = prescriptionController.getLastPrescriptionForDisease(patientID, diseaseID);
         String lastPrescriptionsDetails = gson.toJson(lastPrescriptionsDrugs);
         JsonObject prescriptionDetailObject = new JsonParser().parse(lastPrescriptionsDetails).getAsJsonObject();
-        returnObject.add("lastPrescriptionsForDisease",prescriptionDetailObject);
+        returnObject.add("itemsList",prescriptionDetailObject);
 
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }

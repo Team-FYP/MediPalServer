@@ -68,8 +68,6 @@ public class PrescriptionController {
 
     public boolean addPrescription(Prescription prescription){
         boolean status = false;
-//        LocalDate localDate = LocalDate.now();
-//        String date = DateTimeFormatter.ofPattern("yyy/MM/dd").format(localDate);
         java.sql.Date today = new java.sql.Date(Calendar.getInstance().getTime().getTime());
         PreparedStatement preparedStatementDrug;
         try {
