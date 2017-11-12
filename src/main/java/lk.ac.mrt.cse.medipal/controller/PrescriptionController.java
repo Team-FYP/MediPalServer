@@ -34,7 +34,7 @@ public class PrescriptionController {
     public ArrayList<Prescription> getPrescriptionsByPatient(String patientID){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
-            String SQL = "SELECT `PRESCRIPTION_ID`, `DISEASE_DISEASE_ID`, `PATIENT_NIC`, `DOCTOR_ID` FROM  `prescription` WHERE `prescription`.`PATIENT_NIC` = ?";
+            String SQL = "SELECT `prescription`.`PRESCRIPTION_ID`, `prescription`.`DISEASE_DISEASE_ID`, `prescription`.`PATIENT_NIC`, `prescription`.`DOCTOR_ID`, `disease`.`DISEASE_NAME` FROM `prescription` INNER JOIN `disease` ON `prescription`.`DISEASE_DISEASE_ID`=`disease`.`DISEASE_ID` WHERE `prescription`.`PATIENT_NIC` = ?";
             preparedStatement = connection.prepareStatement(SQL);
             preparedStatement.setString(1, patientID);
             resultSet = preparedStatement.executeQuery();
@@ -42,7 +42,7 @@ public class PrescriptionController {
             while (resultSet.next()){
                 Prescription prescription = new Prescription();
                 prescription.setPrescription_id(resultSet.getInt("PRESCRIPTION_ID"));
-                prescription.setDisease(resultSet.getString("DISEASE_DISEASE_ID"));
+                prescription.setDisease(resultSet.getString("DISEASE_NAME"));
                 prescription.setDoctor_id(resultSet.getString("DOCTOR_ID"));
                 prescriptionList.add(prescription);
             }
