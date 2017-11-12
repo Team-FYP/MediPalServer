@@ -36,7 +36,7 @@ public class PrescriptionResource {
             prescription.setPrescription_drugs(prescriptionDrugsArray);
         }
         JsonArray prescriptionsArray = gson.toJsonTree(prescriptionsList).getAsJsonArray();
-        returnObject.add("prescriptionsList",prescriptionsArray);
+        returnObject.add("itemsList",prescriptionsArray);
         Patient patient = patientController.getPatiaentDetails(patientID);
         String patientDetails = gson.toJson(patient);
         JsonObject patientDetailObject = new JsonParser().parse(patientDetails).getAsJsonObject();
