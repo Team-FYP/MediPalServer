@@ -136,7 +136,7 @@ public class DrugController {
         return null;
     }
 
-    public ArrayList<String> getCategoryListByDrugList(int diseaseID, ArrayList<String> drugList){
+    public ArrayList<String> getCategoryListByDrugList(String diseaseID, ArrayList<String> drugList){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL = "SELECT drug.drug_id, drug.drug_name, category.CATEGORY_NAME, drug_disease.Disease FROM drug " +
@@ -144,7 +144,7 @@ public class DrugController {
                     "INNER JOIN drug_disease ON drug_disease.Drug = drug.drug_id " +
                     "AND drug_disease.Disease= ?;";
             preparedStatement = connection.prepareStatement(SQL);
-            preparedStatement.setInt(1, diseaseID);
+            preparedStatement.setString(1, diseaseID);
             resultSet = preparedStatement.executeQuery();
             ArrayList<String> categoryList = new ArrayList<String>();
             while (resultSet.next()){
@@ -154,6 +154,38 @@ public class DrugController {
             return drugList;
         } catch (SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error getting category list", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<String> getRecentDrugsByDisease(String patientID, String diseaseID){
+        try {
+            ArrayList<String> recentDrugList = new ArrayList<String>();
+            PrescriptionController prescriptionController = new PrescriptionController();
+            String lastPrescriptionId = prescriptionController.getLastPrescriptionIdByDisease(patientID, diseaseID);
+            if(lastPrescriptionId == null || lastPrescriptionId == ""){
+                return null;
+            }
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "SELECT drug.drug_name FROM drug_prescription " +
+                    "INNER JOIN drug ON drug_prescription.Drug_ID=drug.drug_id " +
+                    "AND drug_prescription.Prescription_ID="+lastPrescriptionId;
+            preparedStatement = connection.prepareStatement(SQL);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                recentDrugList.add(resultSet.getString("drug_name"));
+            }
+            return recentDrugList;
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting last prescriptionId by disease", ex);
         } finally {
             try {
                 DbUtils.closeQuietly(resultSet);
