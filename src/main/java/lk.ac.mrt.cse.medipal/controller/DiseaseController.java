@@ -28,9 +28,9 @@ public class DiseaseController {
             ArrayList<Disease> diseasesList = new ArrayList<>();
             while (resultSet.next()){
                 Disease disease = new Disease();
-                disease.setDisease_id(resultSet.getInt("DISEASE_ID"));
+                disease.setDisease_id(resultSet.getString("DISEASE_ID"));
                 disease.setDisease_name(resultSet.getString("DISEASE_NAME"));
-                disease.setGraph_graph_id(resultSet.getInt("GRAPH_GRAPH_ID"));
+                disease.setGraph_graph_id(resultSet.getString("GRAPH_GRAPH_ID"));
                 diseasesList.add(disease);
             }
             return diseasesList;
@@ -57,9 +57,9 @@ public class DiseaseController {
             resultSet = preparedStatement.executeQuery();
             Disease disease = new Disease();
             if (resultSet.next()){
-                disease.setDisease_id(resultSet.getInt("DISEASE_ID"));
+                disease.setDisease_id(resultSet.getString("DISEASE_ID"));
                 disease.setDisease_name(resultSet.getString("DISEASE_NAME"));
-                disease.setGraph_graph_id(resultSet.getInt("GRAPH_GRAPH_ID"));
+                disease.setGraph_graph_id(resultSet.getString("GRAPH_GRAPH_ID"));
                 return disease;
             }
         } catch (SQLException | IOException | PropertyVetoException ex) {
@@ -97,7 +97,7 @@ public class DiseaseController {
                 LOGGER.error("Error closing sql connection", ex);
             }
         }
-        return -1;
+        return null;
     }
 
 }

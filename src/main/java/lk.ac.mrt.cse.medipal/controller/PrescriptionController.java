@@ -194,6 +194,7 @@ public class PrescriptionController {
         java.sql.Date today = new java.sql.Date(Calendar.getInstance().getTime().getTime());
         PreparedStatement preparedStatementPrescription;
         ResultSet resultSetPrescription;
+        ScoreCalculationController scoreCalculationController = new ScoreCalculationController();
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL1 = "SELECT prescription.PRESCRIPTION_ID" +
@@ -208,6 +209,14 @@ public class PrescriptionController {
             ArrayList<PrescriptionDrug> lastPrescriptionDrugArray = new ArrayList<>();
             PrescriptionDrug lastPrescriptionDrug = new PrescriptionDrug();
             Prescription lastPrescription = new Prescription();
+
+
+//            if(resultSet.next()){
+//
+//            }
+//            else {
+////                if a prescription from past is not found this method is called
+//            }
             int prescriptionID = resultSet.getInt("Prescription_ID");
             lastPrescription.setPrescription_id(prescriptionID);
             resultSet.close();

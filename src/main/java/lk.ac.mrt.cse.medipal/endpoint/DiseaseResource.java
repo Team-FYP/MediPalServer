@@ -28,7 +28,7 @@ public class DiseaseResource {
         JsonObject returnObject = new JsonObject();
         ArrayList<Disease> diseasesList = diseaseController.getAllDiseases();
         JsonArray diseasesArray = gson.toJsonTree(diseasesList).getAsJsonArray();
-        returnObject.add("diseasesList",diseasesArray);
+        returnObject.add("itemsList",diseasesArray);
 
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
