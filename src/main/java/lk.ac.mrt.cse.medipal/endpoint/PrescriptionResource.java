@@ -1,16 +1,15 @@
 package lk.ac.mrt.cse.medipal.endpoint;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import lk.ac.mrt.cse.medipal.controller.*;
 import lk.ac.mrt.cse.medipal.model.*;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 /**
@@ -37,7 +36,7 @@ public class PrescriptionResource {
             prescription.setPrescription_drugs(prescriptionDrugsArray);
         }
         JsonArray prescriptionsArray = gson.toJsonTree(prescriptionsList).getAsJsonArray();
-        returnObject.add("itemsList",prescriptionsArray);
+        returnObject.add("prescriptionsList",prescriptionsArray);
         Patient patient = patientController.getPatiaentDetails(patientID);
         String patientDetails = gson.toJson(patient);
         JsonObject patientDetailObject = new JsonParser().parse(patientDetails).getAsJsonObject();
@@ -149,8 +148,8 @@ public class PrescriptionResource {
         Gson gson = new Gson();
         PrescriptionController prescriptionController = new PrescriptionController();
         JsonObject returnObject = new JsonObject();
-        PrescriptionDrug lastPrescriptionsDrugs = prescriptionController.getLastPrescriptionForDisease(patientID, diseaseID);
-        String lastPrescriptionsDetails = gson.toJson(lastPrescriptionsDrugs);
+        Prescription lastPrescriptions = prescriptionController.getLastPrescriptionForDisease(patientID, diseaseID);
+        String lastPrescriptionsDetails = gson.toJson(lastPrescriptions);
         JsonObject prescriptionDetailObject = new JsonParser().parse(lastPrescriptionsDetails).getAsJsonObject();
         returnObject.add("itemsList",prescriptionDetailObject);
 

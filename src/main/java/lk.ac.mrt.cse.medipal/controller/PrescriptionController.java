@@ -1,21 +1,15 @@
 package lk.ac.mrt.cse.medipal.controller;
 
 import lk.ac.mrt.cse.medipal.Database.DB_Connection;
-import lk.ac.mrt.cse.medipal.constants.Constants;
 import lk.ac.mrt.cse.medipal.model.Drug;
 import lk.ac.mrt.cse.medipal.model.Prescription;
 import lk.ac.mrt.cse.medipal.model.PrescriptionDrug;
-import lk.ac.mrt.cse.medipal.util.Encryptor;
-import lk.ac.mrt.cse.medipal.util.ImageUtil;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.log4j.Logger;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.sql.*;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -34,7 +28,7 @@ public class PrescriptionController {
     public ArrayList<Prescription> getPrescriptionsByPatient(String patientID){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
-            String SQL = "SELECT `prescription`.`PRESCRIPTION_ID`, `prescription`.`DISEASE_DISEASE_ID`, `prescription`.`PATIENT_NIC`, `prescription`.`DOCTOR_ID`, `disease`.`DISEASE_NAME` FROM `prescription` INNER JOIN `disease` ON `prescription`.`DISEASE_DISEASE_ID`=`disease`.`DISEASE_ID` WHERE `prescription`.`PATIENT_NIC` = ?";
+            String SQL = "SELECT `prescription`.`PRESCRIPTION_ID`, `prescription`.`DATE`, `prescription`.`DISEASE_DISEASE_ID`, `prescription`.`PATIENT_NIC`, `prescription`.`DOCTOR_ID`, `disease`.`DISEASE_NAME` FROM `prescription` INNER JOIN `disease` ON `prescription`.`DISEASE_DISEASE_ID`=`disease`.`DISEASE_ID` WHERE `prescription`.`PATIENT_NIC` = ?";
             preparedStatement = connection.prepareStatement(SQL);
             preparedStatement.setString(1, patientID);
             resultSet = preparedStatement.executeQuery();
@@ -42,6 +36,8 @@ public class PrescriptionController {
             while (resultSet.next()){
                 Prescription prescription = new Prescription();
                 prescription.setPrescription_id(resultSet.getInt("PRESCRIPTION_ID"));
+                String prescriptionDate=resultSet.getDate("DATE").toString();
+                prescription.setPrescription_date(prescriptionDate);
                 prescription.setDisease(resultSet.getString("DISEASE_NAME"));
                 prescription.setDoctor_id(resultSet.getString("DOCTOR_ID"));
                 prescriptionList.add(prescription);
@@ -169,36 +165,58 @@ public class PrescriptionController {
         return null;
     }
 
-    public PrescriptionDrug getLastPrescriptionForDisease(String patientID, int diseaseID){
+    public Prescription getLastPrescriptionForDisease(String patientID, int diseaseID){
         java.sql.Date today = new java.sql.Date(Calendar.getInstance().getTime().getTime());
-
+        PreparedStatement preparedStatementPrescription;
+        ResultSet resultSetPrescription;
         try {
             connection = DB_Connection.getDBConnection().getConnection();
-            String SQL = "SELECT drug.drug_name, drug.category_id,drug_prescription.Drug_ID, drug_prescription.Prescription_ID, drug_prescription.Dosage, drug_prescription.Frequency, " +
-                    "drug_prescription.Route, drug_prescription.Duration, drug_prescription.Use_Time, drug_prescription.Unit_Size, drug_prescription.Start_Date, prescription.DATE, prescription.DISEASE_DISEASE_ID, prescription.DOCTOR_ID " +
-                    "FROM drug INNER JOIN drug_prescription ON drug.drug_id=drug_prescription.Drug_ID INNER JOIN prescription ON drug_prescription.Prescription_ID=prescription.PRESCRIPTION_ID " +
-                    "AND prescription.PATIENT_NIC=? AND prescription.DISEASE_DISEASE_ID=? ORDER BY drug_prescription.Prescription_ID";
-            preparedStatement = connection.prepareStatement(SQL);
+            String SQL1 = "SELECT prescription.PRESCRIPTION_ID" +
+                    "FROM prescription" +
+                    "WHERE prescription.PATIENT_NIC=? AND prescription.DISEASE_DISEASE_ID=? ORDER BY drug_prescription.Prescription_ID";
+
+            preparedStatement = connection.prepareStatement(SQL1);
             preparedStatement.setString(1, patientID);
             preparedStatement.setInt(2, diseaseID);
             resultSet = preparedStatement.executeQuery();
-            PrescriptionDrug lastPrescription = new PrescriptionDrug();
-
             resultSet.last();
-            Drug drug = new Drug();
-            drug.setDrug_id(resultSet.getString("Drug_ID"));
-            drug.setDrug_name(resultSet.getString("drug_name"));
-            drug.setCategory_id(resultSet.getString("category_id"));
-            lastPrescription.setDrug(drug);
-            lastPrescription.setPrescriptionID(resultSet.getInt("Prescription_ID"));
-            lastPrescription.setDosage(resultSet.getString("Dosage"));
-            lastPrescription.setFrequency(resultSet.getString("Frequency"));
-            lastPrescription.setRoute(resultSet.getString("Route"));
-            lastPrescription.setDuration(resultSet.getInt("Duration"));
-            lastPrescription.setUseTime(resultSet.getString("Use_Time"));
-            lastPrescription.setUnitSize(resultSet.getString("Unit_Size"));
-            String startDate=resultSet.getDate("Start_Date").toString();
-            lastPrescription.setStartDate(startDate);
+            ArrayList<PrescriptionDrug> lastPrescriptionDrugArray = new ArrayList<>();
+            PrescriptionDrug lastPrescriptionDrug = new PrescriptionDrug();
+            Prescription lastPrescription = new Prescription();
+            int prescriptionID = resultSet.getInt("Prescription_ID");
+            lastPrescriptionDrug.setPrescriptionID(prescriptionID);
+            resultSet.close();
+
+            String SQL = "SELECT drug.drug_name, drug.category_id,drug_prescription.Drug_ID, drug_prescription.Prescription_ID, drug_prescription.Dosage, drug_prescription.Frequency," +
+                    "drug_prescription.Route, drug_prescription.Duration, drug_prescription.Use_Time, drug_prescription.Unit_Size, drug_prescription.Start_Date, prescription.DATE, prescription.DISEASE_DISEASE_ID, prescription.DOCTOR_ID " +
+                    "FROM drug INNER JOIN drug_prescription ON drug.drug_id=drug_prescription.Drug_ID INNER JOIN prescription ON drug_prescription.Prescription_ID=prescription.PRESCRIPTION_ID " +
+                    "AND prescription.PRESCRIPTION_ID=?";
+
+
+            preparedStatementPrescription = connection.prepareStatement(SQL);
+//            preparedStatementPrescription.setInt(1, prescriptionID);
+            preparedStatementPrescription.setInt(1, 58);
+            resultSetPrescription = preparedStatementPrescription.executeQuery();
+
+
+            while(resultSetPrescription.next()){
+                Drug drug = new Drug();
+                drug.setDrug_id(resultSetPrescription.getString("Drug_ID"));
+                drug.setDrug_name(resultSetPrescription.getString("drug_name"));
+                drug.setCategory_id(resultSetPrescription.getString("category_id"));
+                lastPrescriptionDrug.setDrug(drug);
+                lastPrescriptionDrug.setPrescriptionID(resultSetPrescription.getInt("Prescription_ID"));
+                lastPrescriptionDrug.setDosage(resultSetPrescription.getString("Dosage"));
+                lastPrescriptionDrug.setFrequency(resultSetPrescription.getString("Frequency"));
+                lastPrescriptionDrug.setRoute(resultSetPrescription.getString("Route"));
+                lastPrescriptionDrug.setDuration(resultSetPrescription.getInt("Duration"));
+                lastPrescriptionDrug.setUseTime(resultSetPrescription.getString("Use_Time"));
+                lastPrescriptionDrug.setUnitSize(resultSetPrescription.getString("Unit_Size"));
+                String startDate=resultSetPrescription.getDate("Start_Date").toString();
+                lastPrescriptionDrug.setStartDate(startDate);
+                lastPrescriptionDrugArray.add(lastPrescriptionDrug);
+            }
+            lastPrescription.setPrescription_drugs(lastPrescriptionDrugArray);
             return lastPrescription;
         } catch (SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error getting patients last prescription for this disease", ex);
