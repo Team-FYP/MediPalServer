@@ -51,14 +51,14 @@ public class PrescriptionResource {
     @Path("/addprescription")
     public Response addPrescription(String request) {
         JsonObject jsonObject = new JsonParser().parse(request).getAsJsonObject();
-        Gson gson = new Gson();
-        Patient patient = new Patient();
-        int prescriptionID = 0;
         DrugController drugController = new DrugController();
+        Patient patient = new Patient();
+        ArrayList<PrescriptionDrug> prescriptionDrugsArray = new ArrayList<>();
+        Gson gson = new Gson();
+        int prescriptionID = 0;
         Doctor doctor = new Doctor();
         Drug drug1 = new Drug("1", "Metformin", "1","1");
         Drug drug2 = new Drug("4", "Glynase", "2    ","1");
-        ArrayList<PrescriptionDrug> prescriptionDrugsArray = new ArrayList<>();
         PrescriptionDrug prescriptionDrug1 = new PrescriptionDrug();
         PrescriptionDrug prescriptionDrug2 = new PrescriptionDrug();
         patient.setNic(jsonObject.get("nic").getAsString());
@@ -155,8 +155,7 @@ public class PrescriptionResource {
         }else {
             Prescription lastPrescriptions = prescriptionController.getLastPrescriptionForDisease(patientID, diseaseID);
             String lastPrescriptionsDetails = gson.toJson(lastPrescriptions);
-            JsonObject prescriptionDetailObject = new JsonParser().parse(lastPrescriptionsDetails).getAsJsonObject();
-            returnObject.add("itemsList",prescriptionDetailObject);
+            returnObject = new JsonParser().parse(lastPrescriptionsDetails).getAsJsonObject();
         }
 
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
