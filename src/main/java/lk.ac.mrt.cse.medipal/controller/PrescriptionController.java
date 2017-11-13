@@ -57,16 +57,16 @@ public class PrescriptionController {
         return null;
     }
 
-    public String getLastPrescriptionIdByDisease(String patientID, String diseaseID){
+    public int getLastPrescriptionIdByDisease(String patientID, String diseaseID){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
-            String SQL = "SELECT `PRESCRIPTION_ID` FROM  `prescription` ORDER BY `PRESCRIPTION_ID` DESC LIMIT 1 WHERE `prescription`.`PATIENT_NIC` = ? AND `prescription`.`DISEASE_DISEASE_ID` = ?";
+            String SQL = "SELECT `PRESCRIPTION_ID` FROM  `prescription` WHERE `prescription`.`PATIENT_NIC` = ? AND `prescription`.`DISEASE_DISEASE_ID` = ? ORDER BY `PRESCRIPTION_ID` DESC LIMIT 1";
             preparedStatement = connection.prepareStatement(SQL);
             preparedStatement.setString(1, patientID);
             preparedStatement.setString(2, diseaseID);
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()){
-                return resultSet.getString("DISEASE_DISEASE_ID");
+                return resultSet.getInt("PRESCRIPTION_ID");
             }
         } catch (SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error getting last prescriptionId by disease", ex);
@@ -79,7 +79,7 @@ public class PrescriptionController {
                 LOGGER.error("Error closing sql connection", ex);
             }
         }
-        return null;
+        return -1;
     }
 
     private static long daysBetween(Date one, Date two) {

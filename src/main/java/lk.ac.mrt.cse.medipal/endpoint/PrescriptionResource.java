@@ -148,12 +148,20 @@ public class PrescriptionResource {
         Gson gson = new Gson();
         PrescriptionController prescriptionController = new PrescriptionController();
         JsonObject returnObject = new JsonObject();
-        Prescription lastPrescriptions = prescriptionController.getLastPrescriptionForDisease(patientID, diseaseID);
-        String lastPrescriptionsDetails = gson.toJson(lastPrescriptions);
-        JsonObject prescriptionDetailObject = new JsonParser().parse(lastPrescriptionsDetails).getAsJsonObject();
-        returnObject.add("itemsList",prescriptionDetailObject);
+
+        int prescriptionID = prescriptionController.getLastPrescriptionIdByDisease(patientID, String.valueOf(diseaseID));
+        if(prescriptionID<0){
+            returnObject.addProperty("itemsList",prescriptionID);
+        }else {
+            Prescription lastPrescriptions = prescriptionController.getLastPrescriptionForDisease(patientID, diseaseID);
+            String lastPrescriptionsDetails = gson.toJson(lastPrescriptions);
+            JsonObject prescriptionDetailObject = new JsonParser().parse(lastPrescriptionsDetails).getAsJsonObject();
+            returnObject.add("itemsList",prescriptionDetailObject);
+        }
 
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+
+
     }
 
 
