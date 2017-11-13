@@ -4,6 +4,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+
 public class ScoreCalculationController {
     private static final int MATRIX_SIZE = 1024,
             POOL_SIZE = Runtime.getRuntime().availableProcessors(), MINIMUM_THRESHOLD = 64;
@@ -12,9 +13,108 @@ public class ScoreCalculationController {
     String[][] historyMat;
     int[][] conflictMat;
 
+    //Transforming the matrices into similar size
+    public Object[] squareMatTransformation(String[][] pathwayMat, String[] historyArr){
+
+        int numEleInHistoryMat = historyArr.length;
+        int numOfPathways = pathwayMat.length;
+        int maxNoOfEleInPathway = pathwayMat[0].length;
+        String[][] historyMat;
+        String[][] pathwayMatTrans;
+        int matSize;
+
+        //When number of historical elelments is the matrix size
+        if(numEleInHistoryMat > numOfPathways && numEleInHistoryMat > maxNoOfEleInPathway){
+
+            matSize = numEleInHistoryMat;
+            //transforming the pathway matrix
+            pathwayMatTrans = new String[matSize][matSize];
+            for (int i=0; i<matSize;i++){
+                for (int j = 0; j < matSize; j++) {
+                    if(i<numOfPathways && j<maxNoOfEleInPathway)
+                        pathwayMatTrans[i][j] = pathwayMat[i][j];
+                    else
+                        pathwayMatTrans[i][j] = "Null";
+                    }
+                }
+
+
+            //transforming the history matrix
+            historyMat = new String[matSize][matSize];
+            for (int i=0;i<matSize; i++){
+                for (int j=0; j<matSize;j++){
+                    historyMat[i][j] = historyArr[j];
+                }
+            }
+
+        }
+
+        //when no. of pathways is the matrix size
+        else if(numOfPathways>numEleInHistoryMat && numOfPathways>maxNoOfEleInPathway) {
+            matSize = numOfPathways;
+            //transforming the pathway matrix
+            pathwayMatTrans = new String[matSize][matSize];
+            for (int i = 0; i < matSize; i++) {
+                for (int j = 0; j < matSize; j++) {
+                    if (j < maxNoOfEleInPathway)
+                        pathwayMatTrans[i][j] = pathwayMat[i][j];
+                    else
+                        pathwayMatTrans[i][j] = "Null";
+                }
+
+
+            }
+
+            //transforming the history matrix
+            historyMat = new String[matSize][matSize];
+            for (int i=0;i<matSize; i++){
+                for (int j=0; j<matSize;j++){
+                    if(j<numEleInHistoryMat)
+                        historyMat[i][j] = historyArr[j];
+                    else
+                        historyMat[i][j] = "Null";
+                }
+            }
+        }
+
+        //when maximum number of elements in pathway matrix is the matrix size
+        else if(maxNoOfEleInPathway>numOfPathways && maxNoOfEleInPathway>numEleInHistoryMat){
+
+            matSize = maxNoOfEleInPathway;
+
+            //transforming the pathway matrix
+            pathwayMatTrans = new String[matSize][matSize];
+            for (int i = 0; i < matSize; i++) {
+                for (int j = 0; j < matSize; j++) {
+                    if (i < numOfPathways)
+                        pathwayMatTrans[i][j] = pathwayMat[i][j];
+                    else
+                        pathwayMatTrans[i][j] = "Null";
+                }
+
+
+            }
+
+            //transforming the history matrix
+            historyMat = new String[matSize][matSize];
+            for (int i=0;i<matSize; i++){
+                for (int j=0; j<matSize;j++){
+                    if(j<numEleInHistoryMat)
+                        historyMat[i][j] = historyArr[j];
+                    else
+                        historyMat[i][j] = "Null";
+                }
+            }
+
+        }
+
+        return new Object[]{pathwayMatTrans,historyMat};
+
+    }
+
+/*
     //Matrx multiplication method
     public int[][] matrixMul(String[][] pathwayMat, String[][] historyMat){
-
 
         this.pathwayMat = pathwayMat;
         this.historyMat = historyMat;
@@ -37,6 +137,7 @@ public class ScoreCalculationController {
         return conflictMat;
 
     }
+    */
 
     //Parallel multiplication happens here
     public void multiply() {
