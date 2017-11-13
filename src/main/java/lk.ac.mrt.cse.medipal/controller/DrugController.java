@@ -171,8 +171,8 @@ public class DrugController {
         try {
             ArrayList<String> recentDrugList = new ArrayList<String>();
             PrescriptionController prescriptionController = new PrescriptionController();
-            String lastPrescriptionId = prescriptionController.getLastPrescriptionIdByDisease(patientID, diseaseID);
-            if(lastPrescriptionId == null || lastPrescriptionId == ""){
+            int lastPrescriptionId = prescriptionController.getLastPrescriptionIdByDisease(patientID, diseaseID);
+            if(lastPrescriptionId == -1){
                 return null;
             }
             connection = DB_Connection.getDBConnection().getConnection();
