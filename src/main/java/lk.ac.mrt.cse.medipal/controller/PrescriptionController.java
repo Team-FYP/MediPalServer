@@ -121,7 +121,7 @@ public class PrescriptionController {
                 preparedStatementDrug.setString(7, drug.getUseTime());
                 preparedStatementDrug.setString(8, drug.getUnitSize());
                 Date startDate = java.sql.Date.valueOf(drug.getStartDate());
-                preparedStatementDrug.setDate(7, startDate);
+                preparedStatementDrug.setDate(9, startDate);
                 preparedStatementDrug.executeUpdate();
             }
 

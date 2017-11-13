@@ -6,6 +6,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lk.ac.mrt.cse.medipal.controller.*;
 import lk.ac.mrt.cse.medipal.model.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -57,58 +59,34 @@ public class PrescriptionResource {
         Gson gson = new Gson();
         int prescriptionID = 0;
         Doctor doctor = new Doctor();
-        Drug drug1 = new Drug("1", "Metformin", "1","1");
-        Drug drug2 = new Drug("4", "Glynase", "2    ","1");
-        PrescriptionDrug prescriptionDrug1 = new PrescriptionDrug();
-        PrescriptionDrug prescriptionDrug2 = new PrescriptionDrug();
         patient.setNic(jsonObject.get("nic").getAsString());
         String disease_id = jsonObject.get("disease_id").getAsString();
         String doctor_id = jsonObject.get("doctor_id").getAsString();
         doctor.setRegistration_id(jsonObject.get("doctor_id").getAsString());
 
-        prescriptionDrug1.setDrug(drug1);
-        prescriptionDrug1.setDosage("3");
-        prescriptionDrug1.setFrequency("3");
-        prescriptionDrug1.setRoute("MOuth");
-        prescriptionDrug1.setDuration(3);
-        prescriptionDrug1.setUseTime("After Meal");
-        prescriptionDrug1.setUnitSize("50mg");
-        prescriptionDrug1.setStartDate("2017-11-05");
-        prescriptionDrugsArray.add(prescriptionDrug1);
-        prescriptionDrug2.setDrug(drug2);
-        prescriptionDrug2.setDosage("3");
-        prescriptionDrug2.setFrequency("3");
-        prescriptionDrug2.setRoute("MOuth");
-        prescriptionDrug2.setDuration(3);
-        prescriptionDrug2.setUseTime("After Meal");
-        prescriptionDrug2.setUnitSize("50mg");
-        prescriptionDrug2.setStartDate("2017-11-05");
-        prescriptionDrugsArray.add(prescriptionDrug2);
 
-//        JSONObject jsonObj = new JSONObject(jsonObject);
-//
-//        JSONArray ja_data = jsonObj.getJSONArray("prescription_drugs");
-//        int length = ja_data.length();
-//        for(int i=0; i<length; i++) {
-//            JSONObject job = ja_data.getJSONObject(i);
-//            PrescriptionDrug prescriptionDrug = new PrescriptionDrug();
-//            prescriptionDrug.setDrug(drug1);
-//            prescriptionDrug.setDosage(job.getString("dosage"));
-//            prescriptionDrug.setFrequency(job.getString("frequency"));
-//            prescriptionDrug.setRoute(job.getString("route"));
-//            prescriptionDrug.setDuration(job.getInt("duration"));
-//            prescriptionDrug.setUseTime(job.getString("useTime"));
-//            prescriptionDrug.setStartDate(job.getString("startDate"));
-//            prescriptionDrugsArray.add(prescriptionDrug);
-//        }
+        JSONObject drugsArrayObject = new JSONObject(jsonObject.toString());
+        JSONArray drugsArray = drugsArrayObject.getJSONArray("prescription_drugs");
 
-
+        for(int i=0; i<drugsArray.length(); i++){
+            PrescriptionDrug drug = new PrescriptionDrug();
+            JSONObject drugObject = drugsArray.getJSONObject(i);
+            drug.setDrug(drugController.getDrugDetails(drugObject.get("dosage").toString()));
+            drug.setDosage(drugObject.get("dosage").toString());
+            drug.setFrequency(drugObject.get("frequency").toString());
+            drug.setRoute(drugObject.get("route").toString());
+            drug.setDuration(Integer.parseInt(drugObject.get("duration").toString()));
+            drug.setUseTime(drugObject.get("useTime").toString());
+            drug.setUnitSize(drugObject.get("unitSize").toString());
+            drug.setStartDate(drugObject.get("startDate").toString());
+            prescriptionDrugsArray.add(drug);
+        }
 
 
         Prescription prescription = new Prescription(prescriptionID,prescriptionDrugsArray,doctor,patient,disease_id,doctor_id, null);
         PrescriptionController prescriptionController = new PrescriptionController();
         JsonObject returnObject = new JsonObject();
-
+//
         boolean addPrescription = prescriptionController.addPrescription(prescription);
         returnObject.addProperty("success",addPrescription);
         if(addPrescription){
@@ -121,7 +99,6 @@ public class PrescriptionResource {
         else {
             returnObject.addProperty("message","Saving Failed");
         }
-        returnObject.addProperty("size",4);
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
 
