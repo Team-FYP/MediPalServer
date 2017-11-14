@@ -1,10 +1,10 @@
 package lk.ac.mrt.cse.medipal.controller;
 
-import java.util.*;
-
 import com.microsoft.z3.*;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
-import sun.java2d.pipe.AAShapePipe;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class DiseasePathController {
 
