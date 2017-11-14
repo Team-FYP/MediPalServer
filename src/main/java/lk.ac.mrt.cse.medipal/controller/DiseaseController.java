@@ -17,7 +17,7 @@ public class DiseaseController {
     private static PreparedStatement preparedStatement;
     private static ResultSet resultSet;
     private static Connection connection;
-    public static Logger LOGGER = org.apache.log4j.Logger.getLogger(DoctorController.class);
+    public static Logger LOGGER = org.apache.log4j.Logger.getLogger(DiseaseController.class);
 
     public ArrayList<Disease> getAllDiseases(){
         try {

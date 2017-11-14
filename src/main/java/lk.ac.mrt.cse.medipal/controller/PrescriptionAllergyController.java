@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class PrescriptionAllergyController {
-    public static Logger LOGGER = org.apache.log4j.Logger.getLogger(DrugController.class);
+    public static Logger LOGGER = org.apache.log4j.Logger.getLogger(PrescriptionAllergyController.class);
     private static PreparedStatement preparedStatement;
     private static ResultSet resultSet;
     private static Connection connection;

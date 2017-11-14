@@ -146,8 +146,8 @@ public class PrescriptionController {
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL = "SELECT drug.drug_name, drug.category_id,drug_prescription.Drug_ID, drug_prescription.Prescription_ID, drug_prescription.Dosage, drug_prescription.Frequency, " +
-                    "drug_prescription.Route, drug_prescription.Duration, drug_prescription.Use_Time, drug_prescription.Unit_Size, drug_prescription.Start_Date, prescription.DATE, prescription.DISEASE_DISEASE_ID, prescription.DOCTOR_ID " +
-                    "FROM drug INNER JOIN drug_prescription ON drug.drug_id=drug_prescription.Drug_ID INNER JOIN prescription ON drug_prescription.Prescription_ID=prescription.PRESCRIPTION_ID " +
+                    "drug_route.route_name, drug_prescription.Duration, drug_prescription.Use_Time, drug_prescription.Unit_Size, drug_prescription.Start_Date, prescription.DATE, prescription.DISEASE_DISEASE_ID, prescription.DOCTOR_ID " +
+                    "FROM drug INNER JOIN drug_prescription ON drug.drug_id=drug_prescription.Drug_ID INNER JOIN prescription ON drug_prescription.Prescription_ID=prescription.PRESCRIPTION_ID INNER JOIN drug_route ON drug_route.route_id=drug_prescription.Route " +
                     "AND prescription.PATIENT_NIC=?";
             preparedStatement = connection.prepareStatement(SQL);
             preparedStatement.setString(1, patientID);
@@ -166,7 +166,7 @@ public class PrescriptionController {
                     prescriptionDrug.setPrescriptionID(resultSet.getInt("Prescription_ID"));
                     prescriptionDrug.setDosage(resultSet.getString("Dosage"));
                     prescriptionDrug.setFrequency(resultSet.getString("Frequency"));
-                    prescriptionDrug.setRoute(resultSet.getString("Route"));
+                    prescriptionDrug.setRoute(resultSet.getString("route_name"));
                     prescriptionDrug.setDuration(resultSet.getInt("Duration"));
                     prescriptionDrug.setUseTime(resultSet.getString("Use_Time"));
                     prescriptionDrug.setUnitSize(resultSet.getString("Unit_size"));
@@ -222,8 +222,8 @@ public class PrescriptionController {
             resultSet.close();
 
             String SQL = "SELECT drug.drug_name, drug.category_id,drug_prescription.Drug_ID, drug_prescription.Prescription_ID, drug_prescription.Dosage, drug_prescription.Frequency," +
-                    "drug_prescription.Route, drug_prescription.Duration, drug_prescription.Use_Time, drug_prescription.Unit_Size, drug_prescription.Start_Date, prescription.DATE, prescription.DISEASE_DISEASE_ID, prescription.DOCTOR_ID " +
-                    "FROM drug INNER JOIN drug_prescription ON drug.drug_id=drug_prescription.Drug_ID INNER JOIN prescription ON drug_prescription.Prescription_ID=prescription.PRESCRIPTION_ID " +
+                    "drug_route.route_name, drug_prescription.Duration, drug_prescription.Use_Time, drug_prescription.Unit_Size, drug_prescription.Start_Date, prescription.DATE, prescription.DISEASE_DISEASE_ID, prescription.DOCTOR_ID " +
+                    "FROM drug INNER JOIN drug_prescription ON drug.drug_id=drug_prescription.Drug_ID INNER JOIN prescription ON drug_prescription.Prescription_ID=prescription.PRESCRIPTION_ID INNER JOIN drug_route ON drug_route.route_id=drug_prescription.Route " +
                     "AND prescription.PRESCRIPTION_ID=?";
 
 
@@ -241,7 +241,7 @@ public class PrescriptionController {
                 lastPrescriptionDrug.setPrescriptionID(resultSetPrescription.getInt("Prescription_ID"));
                 lastPrescriptionDrug.setDosage(resultSetPrescription.getString("Dosage"));
                 lastPrescriptionDrug.setFrequency(resultSetPrescription.getString("Frequency"));
-                lastPrescriptionDrug.setRoute(resultSetPrescription.getString("Route"));
+                lastPrescriptionDrug.setRoute(resultSetPrescription.getString("route_name"));
                 lastPrescriptionDrug.setDuration(resultSetPrescription.getInt("Duration"));
                 lastPrescriptionDrug.setUseTime(resultSetPrescription.getString("Use_Time"));
                 lastPrescriptionDrug.setUnitSize(resultSetPrescription.getString("Unit_Size"));
