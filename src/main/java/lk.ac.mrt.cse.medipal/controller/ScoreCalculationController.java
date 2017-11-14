@@ -23,8 +23,8 @@ public class ScoreCalculationController {
         String[][] pathwayMatTrans;
         int matSize;
 
-        //When number of historical elelments is the matrix size
-        if(numEleInHistoryMat > numOfPathways && numEleInHistoryMat > maxNoOfEleInPathway){
+        //When number of historical elements is the matrix size
+        if( (numEleInHistoryMat > numOfPathways && numEleInHistoryMat == numOfPathways ) && ( numEleInHistoryMat > maxNoOfEleInPathway && numEleInHistoryMat == maxNoOfEleInPathway) ){
 
             matSize = numEleInHistoryMat;
             //transforming the pathway matrix
@@ -50,7 +50,7 @@ public class ScoreCalculationController {
         }
 
         //when no. of pathways is the matrix size
-        else if(numOfPathways>numEleInHistoryMat && numOfPathways>maxNoOfEleInPathway) {
+        else if((numOfPathways>numEleInHistoryMat && numOfPathways==numEleInHistoryMat) && (numOfPathways>maxNoOfEleInPathway && numOfPathways==maxNoOfEleInPathway)) {
             matSize = numOfPathways;
             //transforming the pathway matrix
             pathwayMatTrans = new String[matSize][matSize];
@@ -78,7 +78,7 @@ public class ScoreCalculationController {
         }
 
         //when maximum number of elements in pathway matrix is the matrix size
-        else if(maxNoOfEleInPathway>numOfPathways && maxNoOfEleInPathway>numEleInHistoryMat){
+        else if((maxNoOfEleInPathway>numOfPathways && maxNoOfEleInPathway==numOfPathways) && (maxNoOfEleInPathway>numEleInHistoryMat && maxNoOfEleInPathway==numEleInHistoryMat)){
 
             matSize = maxNoOfEleInPathway;
 
@@ -246,6 +246,12 @@ public class ScoreCalculationController {
             first.run();
             second.run();
         }
+
+    }
+
+    public static void main(String[] args) {
+
+
 
     }
 
