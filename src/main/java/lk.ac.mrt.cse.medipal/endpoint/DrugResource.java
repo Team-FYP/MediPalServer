@@ -5,7 +5,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lk.ac.mrt.cse.medipal.controller.DrugController;
-import lk.ac.mrt.cse.medipal.model.Doctor;
 import lk.ac.mrt.cse.medipal.model.Drug;
 
 import javax.ws.rs.*;
@@ -65,6 +64,18 @@ public class DrugResource {
         Drug drug = new Drug(drug_id, drug_name,category, disease_id);
         boolean drugDetail = drugController.addDrug(drug);
         returnObject.addProperty("drugDetails", drugDetail);
+
+        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+    }
+
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/testhashmap")
+    public Response getDrug() {
+        DrugController drugController = new DrugController();
+        drugController.getSeverityValueFromDBForDrugToDruginteraction();
+        JsonObject returnObject = new JsonObject();
 
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }

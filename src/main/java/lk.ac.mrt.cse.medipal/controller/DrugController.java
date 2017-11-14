@@ -236,19 +236,22 @@ public class DrugController {
     public String getDrugNameByID(int id){
 
         String drug_name = null;
+        ResultSet resultSet1= null;
         try{
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL = "SELECT drug_name from drug where drug_id = ?";
             preparedStatement = connection.prepareStatement(SQL);
             preparedStatement.setInt(1,id);
-            resultSet = preparedStatement.executeQuery();
-            drug_name = resultSet.getString("drug_name");
+            resultSet1 = preparedStatement.executeQuery();
+            if(resultSet1.next()){
+                drug_name = resultSet1.getString("drug_name");
+            }
 
         }catch(SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error getting category list", ex);
         } finally {
             try {
-                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(resultSet1);
                 DbUtils.closeQuietly(preparedStatement);
                 DbUtils.close(connection);
             } catch (SQLException ex) {
@@ -371,7 +374,6 @@ public class DrugController {
             resultSet = preparedStatement.executeQuery();
 
             while(resultSet.next()){
-
                 drug_name1 = getDrugNameByID(resultSet.getInt("drug1_id"));
                 drug_name2 = getDrugNameByID(resultSet.getInt("drug2_id"));
                 id = drug_name1 +"_"+ drug_name2;
@@ -391,7 +393,10 @@ public class DrugController {
                 LOGGER.error("Error closing sql connection", ex);
             }
         }
-
+//        System.out.println(scoreValue.get(0));
+        for ( String key : scoreValue.keySet() ) {
+            LOGGER.info(scoreValue.get(key));
+        }
         return scoreValue;
     }
 }
