@@ -91,6 +91,7 @@ public class PrescriptionController {
         boolean status = false;
         java.sql.Date today = new java.sql.Date(Calendar.getInstance().getTime().getTime());
         PreparedStatement preparedStatementDrug;
+        PreparedStatement preparedStatementDrugRoute;
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQLPRESCRIPTION = "INSERT INTO `prescription` " +
@@ -107,6 +108,18 @@ public class PrescriptionController {
             int key = keys.getInt(1);
             preparedStatement.close();
 //
+
+            String SQLROUTES = "SELECT drug_route.route_id FROM drug_route WHERE drug_route.route_name= ?";
+            preparedStatementDrug = connection.prepareStatement(SQLROUTES);
+            for (PrescriptionDrug drug:prescription.getPrescription_drugs()
+                    ) {
+                preparedStatementDrug.setString(1, drug.getRoute());
+                resultSet = preparedStatementDrug.executeQuery();
+                drug.setRoute("1");
+//                drug.setRoute(String.valueOf(resultSet.getInt("route_id")));
+                resultSet.close();
+            }
+
             String SQLDRUGS = "INSERT INTO `drug_prescription` " +
                     " (`DRUG_ID`, `PRESCRIPTION_ID`,`DOSAGE`,`FREQUENCY`,`ROUTE`,`DURATION`, `USE_TIME`, `Unit_Size`, `Start_Date`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             preparedStatementDrug = connection.prepareStatement(SQLDRUGS, Statement.RETURN_GENERATED_KEYS);
@@ -116,7 +129,7 @@ public class PrescriptionController {
                 preparedStatementDrug.setInt(2, key);
                 preparedStatementDrug.setString(3, drug.getDosage());
                 preparedStatementDrug.setString(4, drug.getFrequency());
-                preparedStatementDrug.setString(5, drug.getRoute());
+                preparedStatementDrug.setInt(5, Integer.parseInt(drug.getRoute()));
                 preparedStatementDrug.setInt(6, drug.getDuration());
                 preparedStatementDrug.setString(7, drug.getUseTime());
                 preparedStatementDrug.setString(8, drug.getUnitSize());
@@ -210,13 +223,6 @@ public class PrescriptionController {
             PrescriptionDrug lastPrescriptionDrug = new PrescriptionDrug();
             Prescription lastPrescription = new Prescription();
 
-
-//            if(resultSet.next()){
-//
-//            }
-//            else {
-////                if a prescription from past is not found this method is called
-//            }
             int prescriptionID = resultSet.getInt("Prescription_ID");
             lastPrescription.setPrescription_id(prescriptionID);
             resultSet.close();
