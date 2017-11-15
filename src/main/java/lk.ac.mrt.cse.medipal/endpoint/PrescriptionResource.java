@@ -121,7 +121,7 @@ public class PrescriptionResource {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/patient/{id}/lastprescription/{disease}")
-    public Response getCurrentPrescriptionsForDisease(@PathParam("id") String patientID, @PathParam("disease") int diseaseID) {
+    public Response getLastPrescriptionsForDisease(@PathParam("id") String patientID, @PathParam("disease") int diseaseID) {
         Gson gson = new Gson();
         PrescriptionController prescriptionController = new PrescriptionController();
         JsonObject returnObject = new JsonObject();
