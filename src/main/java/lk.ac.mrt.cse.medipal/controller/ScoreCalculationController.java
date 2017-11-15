@@ -21,92 +21,86 @@ public class ScoreCalculationController {
         int maxNoOfEleInPathway = pathwayMat[0].length;
         String[][] historyMat;
         String[][] pathwayMatTrans;
-        int matSize;
+        int matSize = Math.max(Math.max(numEleInHistoryMat,numOfPathways),maxNoOfEleInPathway);
 
-        //When number of historical elements is the matrix size
-        if( (numEleInHistoryMat > numOfPathways && numEleInHistoryMat == numOfPathways ) && ( numEleInHistoryMat > maxNoOfEleInPathway && numEleInHistoryMat == maxNoOfEleInPathway) ){
+
+//        //When number of historical elements is the matrix size
+//        if( (numEleInHistoryMat > numOfPathways && numEleInHistoryMat == numOfPathways ) && ( numEleInHistoryMat > maxNoOfEleInPathway && numEleInHistoryMat == maxNoOfEleInPathway) ){
 
             matSize = numEleInHistoryMat;
             //transforming the pathway matrix
             pathwayMatTrans = new String[matSize][matSize];
             for (int i=0; i<matSize;i++){
-                for (int j = 0; j < matSize; j++) {
-                    if(i<numOfPathways && j<maxNoOfEleInPathway)
-                        pathwayMatTrans[i][j] = pathwayMat[i][j];
-                    else
-                        pathwayMatTrans[i][j] = "Null";
-                    }
+                System.arraycopy(pathwayMat[i],0,pathwayMatTrans[i],0,pathwayMatTrans.length);
                 }
 
 
             //transforming the history matrix
             historyMat = new String[matSize][matSize];
-            for (int i=0;i<matSize; i++){
-                for (int j=0; j<matSize;j++){
-                    historyMat[i][j] = historyArr[j];
-                }
+            for (int i=0;i<5; i++){
+                historyMat[i] = historyArr;
             }
 
-        }
-
-        //when no. of pathways is the matrix size
-        else if((numOfPathways>numEleInHistoryMat && numOfPathways==numEleInHistoryMat) && (numOfPathways>maxNoOfEleInPathway && numOfPathways==maxNoOfEleInPathway)) {
-            matSize = numOfPathways;
-            //transforming the pathway matrix
-            pathwayMatTrans = new String[matSize][matSize];
-            for (int i = 0; i < matSize; i++) {
-                for (int j = 0; j < matSize; j++) {
-                    if (j < maxNoOfEleInPathway)
-                        pathwayMatTrans[i][j] = pathwayMat[i][j];
-                    else
-                        pathwayMatTrans[i][j] = "Null";
-                }
-
-
-            }
-
-            //transforming the history matrix
-            historyMat = new String[matSize][matSize];
-            for (int i=0;i<matSize; i++){
-                for (int j=0; j<matSize;j++){
-                    if(j<numEleInHistoryMat)
-                        historyMat[i][j] = historyArr[j];
-                    else
-                        historyMat[i][j] = "Null";
-                }
-            }
-        }
-
-        //when maximum number of elements in pathway matrix is the matrix size
-        else if((maxNoOfEleInPathway>numOfPathways && maxNoOfEleInPathway==numOfPathways) && (maxNoOfEleInPathway>numEleInHistoryMat && maxNoOfEleInPathway==numEleInHistoryMat)){
-
-            matSize = maxNoOfEleInPathway;
-
-            //transforming the pathway matrix
-            pathwayMatTrans = new String[matSize][matSize];
-            for (int i = 0; i < matSize; i++) {
-                for (int j = 0; j < matSize; j++) {
-                    if (i < numOfPathways)
-                        pathwayMatTrans[i][j] = pathwayMat[i][j];
-                    else
-                        pathwayMatTrans[i][j] = "Null";
-                }
-
-
-            }
-
-            //transforming the history matrix
-            historyMat = new String[matSize][matSize];
-            for (int i=0;i<matSize; i++){
-                for (int j=0; j<matSize;j++){
-                    if(j<numEleInHistoryMat)
-                        historyMat[i][j] = historyArr[j];
-                    else
-                        historyMat[i][j] = "Null";
-                }
-            }
-
-        }
+//        }
+//
+//        //when no. of pathways is the matrix size
+//        else if((numOfPathways>numEleInHistoryMat && numOfPathways==numEleInHistoryMat) && (numOfPathways>maxNoOfEleInPathway && numOfPathways==maxNoOfEleInPathway)) {
+//            matSize = numOfPathways;
+//            //transforming the pathway matrix
+//            pathwayMatTrans = new String[matSize][matSize];
+//            for (int i = 0; i < matSize; i++) {
+//                for (int j = 0; j < matSize; j++) {
+//                    if (j < maxNoOfEleInPathway)
+//                        pathwayMatTrans[i][j] = pathwayMat[i][j];
+//                    else
+//                        pathwayMatTrans[i][j] = "Null";
+//                }
+//
+//
+//            }
+//
+//            //transforming the history matrix
+//            historyMat = new String[matSize][matSize];
+//            for (int i=0;i<matSize; i++){
+//                for (int j=0; j<matSize;j++){
+//                    if(j<numEleInHistoryMat)
+//                        historyMat[i][j] = historyArr[j];
+//                    else
+//                        historyMat[i][j] = "Null";
+//                }
+//            }
+//        }
+//
+//        //when maximum number of elements in pathway matrix is the matrix size
+//        else if((maxNoOfEleInPathway>numOfPathways && maxNoOfEleInPathway==numOfPathways) && (maxNoOfEleInPathway>numEleInHistoryMat && maxNoOfEleInPathway==numEleInHistoryMat)){
+//
+//            matSize = maxNoOfEleInPathway;
+//
+//            //transforming the pathway matrix
+//            pathwayMatTrans = new String[matSize][matSize];
+//            for (int i = 0; i < matSize; i++) {
+//                for (int j = 0; j < matSize; j++) {
+//                    if (i < numOfPathways)
+//                        pathwayMatTrans[i][j] = pathwayMat[i][j];
+//                    else
+//                        pathwayMatTrans[i][j] = "Null";
+//                }
+//
+//
+//            }
+//
+//            //transforming the history matrix
+//            historyMat = new String[matSize][matSize];
+//            for (int i=0;i<matSize; i++){
+//                for (int j=0; j<matSize;j++){
+//                    if(j<numEleInHistoryMat)
+//                        historyMat[i][j] = historyArr[j];
+//                    else
+//                        historyMat[i][j] = "Null";
+//                }
+//            }
+//
+//        }
 
         return new Object[]{pathwayMatTrans,historyMat};
 
