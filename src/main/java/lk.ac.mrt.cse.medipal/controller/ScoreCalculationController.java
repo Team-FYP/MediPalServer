@@ -70,6 +70,7 @@ class WorkerThread implements Runnable {
     private int C[][];
     private int D[][];
 
+
     public WorkerThread(int row, int col, String A[][], String B[][], int C[][], int D[][]) {
         this.row = row;
         this.col = col;
