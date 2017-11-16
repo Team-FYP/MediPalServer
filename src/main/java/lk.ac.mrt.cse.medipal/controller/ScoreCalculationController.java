@@ -1,251 +1,92 @@
 package lk.ac.mrt.cse.medipal.controller;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
+import org.apache.log4j.Logger;
+
+import java.util.HashMap;
 
 public class ScoreCalculationController {
-    private static final int MATRIX_SIZE = 1024,
-            POOL_SIZE = Runtime.getRuntime().availableProcessors(), MINIMUM_THRESHOLD = 64;
-    private final ExecutorService exec = Executors.newFixedThreadPool(POOL_SIZE);
-    String[][] pathwayMat;
-    String[][] historyMat;
-    int[][] conflictMat;
+    public static Logger LOGGER = org.apache.log4j.Logger.getLogger(ScoreCalculationController.class);
 
-    //Transforming the matrices into similar size
-    public Object[] squareMatTransformation(String[][] pathwayMat, String[] historyArr){
+    static DrugController drugController = new DrugController();
+    static HashMap<String, Integer> drugToDrugConflictScore = drugController.getDrugToDrugConflictScore();
+    static HashMap<String, Integer> drugToDiseaseConflictScore = drugController.getDrugToDiseaseConflictScore();
 
-        int numEleInHistoryMat = historyArr.length;
-        int numOfPathways = pathwayMat.length;
-        int maxNoOfEleInPathway = pathwayMat[0].length;
-        String[][] historyMat;
-        String[][] pathwayMatTrans;
-        int matSize = Math.max(Math.max(numEleInHistoryMat,numOfPathways),maxNoOfEleInPathway);
+    public int getConflictScore(String drug1, String drug2){
 
+        if(drugToDrugConflictScore.get(drug1+"_"+drug2) != null)
+            return drugToDrugConflictScore.get(drug1+"_"+drug2);
+        else if(drugToDrugConflictScore.get(drug2+"_"+drug1) != null)
+            return drugToDrugConflictScore.get(drug2+"_"+drug1);
+        else if(drugToDiseaseConflictScore.get(drug1+"_"+drug2) != null)
+            return drugToDiseaseConflictScore.get(drug1+"_"+drug2);
+        else if(drugToDiseaseConflictScore.get(drug2+"_"+drug1) != null )
+            return drugToDiseaseConflictScore.get(drug2+"_"+drug1);
 
-//        //When number of historical elements is the matrix size
-//        if( (numEleInHistoryMat > numOfPathways && numEleInHistoryMat == numOfPathways ) && ( numEleInHistoryMat > maxNoOfEleInPathway && numEleInHistoryMat == maxNoOfEleInPathway) ){
-
-            matSize = numEleInHistoryMat;
-            //transforming the pathway matrix
-            pathwayMatTrans = new String[matSize][matSize];
-            for (int i=0; i<matSize;i++){
-                System.arraycopy(pathwayMat[i],0,pathwayMatTrans[i],0,pathwayMatTrans.length);
-                }
-
-
-            //transforming the history matrix
-            historyMat = new String[matSize][matSize];
-            for (int i=0;i<5; i++){
-                historyMat[i] = historyArr;
-            }
-
-//        }
-//
-//        //when no. of pathways is the matrix size
-//        else if((numOfPathways>numEleInHistoryMat && numOfPathways==numEleInHistoryMat) && (numOfPathways>maxNoOfEleInPathway && numOfPathways==maxNoOfEleInPathway)) {
-//            matSize = numOfPathways;
-//            //transforming the pathway matrix
-//            pathwayMatTrans = new String[matSize][matSize];
-//            for (int i = 0; i < matSize; i++) {
-//                for (int j = 0; j < matSize; j++) {
-//                    if (j < maxNoOfEleInPathway)
-//                        pathwayMatTrans[i][j] = pathwayMat[i][j];
-//                    else
-//                        pathwayMatTrans[i][j] = "Null";
-//                }
-//
-//
-//            }
-//
-//            //transforming the history matrix
-//            historyMat = new String[matSize][matSize];
-//            for (int i=0;i<matSize; i++){
-//                for (int j=0; j<matSize;j++){
-//                    if(j<numEleInHistoryMat)
-//                        historyMat[i][j] = historyArr[j];
-//                    else
-//                        historyMat[i][j] = "Null";
-//                }
-//            }
-//        }
-//
-//        //when maximum number of elements in pathway matrix is the matrix size
-//        else if((maxNoOfEleInPathway>numOfPathways && maxNoOfEleInPathway==numOfPathways) && (maxNoOfEleInPathway>numEleInHistoryMat && maxNoOfEleInPathway==numEleInHistoryMat)){
-//
-//            matSize = maxNoOfEleInPathway;
-//
-//            //transforming the pathway matrix
-//            pathwayMatTrans = new String[matSize][matSize];
-//            for (int i = 0; i < matSize; i++) {
-//                for (int j = 0; j < matSize; j++) {
-//                    if (i < numOfPathways)
-//                        pathwayMatTrans[i][j] = pathwayMat[i][j];
-//                    else
-//                        pathwayMatTrans[i][j] = "Null";
-//                }
-//
-//
-//            }
-//
-//            //transforming the history matrix
-//            historyMat = new String[matSize][matSize];
-//            for (int i=0;i<matSize; i++){
-//                for (int j=0; j<matSize;j++){
-//                    if(j<numEleInHistoryMat)
-//                        historyMat[i][j] = historyArr[j];
-//                    else
-//                        historyMat[i][j] = "Null";
-//                }
-//            }
-//
-//        }
-
-        return new Object[]{pathwayMatTrans,historyMat};
-
+        return 0;
     }
 
-/*
-    //Matrx multiplication method
-    public int[][] matrixMul(String[][] pathwayMat, String[][] historyMat){
+    public void multiplyMatrices(String[][] pathList, String[][] patientHistory){
 
-        this.pathwayMat = pathwayMat;
-        this.historyMat = historyMat;
-        this.conflictMat = new int[pathwayMat.length][pathwayMat.length];
-        String[] comparingStrings = new String[2];
+        int size = pathList[0].length;
+        int[][] scoreMatrix = new int[size][size];
+        int[][] finalScoreMatrix = new int[size][1];
 
-        for (int i=0; i< pathwayMat.length;i++){
+        int threadcount = 0;
+        Thread[] thread = new Thread[size*size];
 
-            for (int j=0; j<pathwayMat.length ;j++){
-
-                for (int k = 0; k < pathwayMat.length; k++) {
-                    comparingStrings[0] = pathwayMat[i][k];
-                    comparingStrings[1] = historyMat[k][j];
-                    conflictMat[i][k] += getConflictValue(comparingStrings);//pass the hash map parameter
-                }
-            }
-
-        }
-
-        return conflictMat;
-
-    }
-    */
-
-    //Parallel multiplication happens here
-    public void multiply() {
-        //multiplyRecursive(0, 0, 0, 0, 0, 0, pathwayMat.length);
-        Future f = exec.submit(new MultiplyTask(pathwayMat, historyMat, conflictMat, 0, 0, 0, 0, 0, 0, pathwayMat.length));
         try {
-            f.get();
-            exec.shutdown();
-        } catch (Exception e) {
+            for(int i=0; i < size; i++) {
+                for(int j=0; j<size; j++ ) {
+                    thread[threadcount] = new Thread(new WorkerThread(i, j, pathList, patientHistory, scoreMatrix, finalScoreMatrix));
+                    thread[threadcount].start();
 
-        }
-    }
-
-    public int[][] getConflictMat(){
-        return conflictMat;
-    }
-
-    public int getConflictValue(String[] comparingStrings){
-
-
-        int conflictVal = 0;//get value from hashMap
-
-        //db call method
-
-        return conflictVal;
-
-
-    }
-
-    class MultiplyTask implements Runnable{
-        String[] comparingStrings = new String[2];
-        private String[][] pathwayMat;
-        private String[][] historyMat;
-        private int[][] conflictMat;
-        private int pathwayMat_i, pathwayMat_j, historyMat_i, historyMat_j, conflictMat_i, conflictMat_j, size;
-
-        MultiplyTask(String[][] pathwayMat, String[][] historyMat, int[][] conflictMat, int pathwayMat_i, int pathwayMat_j, int historyMat_i, int historyMat_j, int c_i, int c_j, int size) {
-            this.pathwayMat = pathwayMat;
-            this.historyMat = historyMat;
-            this.conflictMat = conflictMat;
-            this.pathwayMat_i = pathwayMat_i;
-            this.pathwayMat_j = pathwayMat_j;
-            this.historyMat_i = historyMat_i;
-            this.historyMat_j = historyMat_j;
-            this.conflictMat_i = conflictMat_i;
-            this.conflictMat_j = conflictMat_j;
-            this.size = size;
-        }
-
-        public void run() {
-            //System.out.format("[%d,%d]x[%d,%d](%d)\n",a_i,a_j,b_i,b_j,size);
-            int h = size/2;
-            if (size <= MINIMUM_THRESHOLD) {
-                for (int i = 0; i < size; ++i) {
-                    for (int j = 0; j < size; ++j) {
-                        for (int k = 0; k < size; ++k) {
-                            //c[c_i+i][c_j+j] += a[a_i+i][a_j+k] * b[b_i+k][b_j+j];
-                            comparingStrings[0] = pathwayMat[pathwayMat_i+i][pathwayMat_j+k];
-                            comparingStrings[1] = historyMat[historyMat_i+k][historyMat_j+j];
-                            conflictMat[conflictMat_i+i][conflictMat_j+j] += getConflictValue(comparingStrings);//pass the hash map parameter
-                        }
-                    }
+                    thread[threadcount].join();
+                    threadcount++;
                 }
-            } else {
-                MultiplyTask[] tasks = {
-                        new MultiplyTask(pathwayMat, historyMat, conflictMat, pathwayMat_i, pathwayMat_j, historyMat_i, historyMat_j, conflictMat_i, conflictMat_j, h),
-                        new MultiplyTask(pathwayMat, historyMat, conflictMat, pathwayMat_i, pathwayMat_j+h, historyMat_i+h, historyMat_j, conflictMat_i, conflictMat_j, h),
 
-                        new MultiplyTask(pathwayMat, historyMat, conflictMat, pathwayMat_i, pathwayMat_j, historyMat_i, historyMat_j+h, conflictMat_i, conflictMat_j+h, h),
-                        new MultiplyTask(pathwayMat, historyMat, conflictMat, pathwayMat_i, pathwayMat_j+h, historyMat_i+h, historyMat_j+h, conflictMat_i, conflictMat_j+h, h),
-
-                        new MultiplyTask(pathwayMat, historyMat, conflictMat, pathwayMat_i+h, pathwayMat_j, historyMat_i, historyMat_j, conflictMat_i+h, conflictMat_j, h),
-                        new MultiplyTask(pathwayMat, historyMat, conflictMat, pathwayMat_i+h, pathwayMat_j+h, historyMat_i+h, historyMat_j, conflictMat_i+h, conflictMat_j, h),
-
-                        new MultiplyTask(pathwayMat, historyMat, conflictMat, pathwayMat_i+h, pathwayMat_j, historyMat_i, historyMat_j+h, conflictMat_i+h, conflictMat_j+h, h),
-                        new MultiplyTask(pathwayMat, historyMat, conflictMat, pathwayMat_i+h, pathwayMat_j+h, historyMat_i+h, historyMat_j+h, conflictMat_i+h, conflictMat_j+h, h)
-                };
-
-                FutureTask[] fs = new FutureTask[tasks.length/2];
-
-                for (int i = 0; i < tasks.length; i+=2) {
-                    fs[i/2] = new FutureTask(new Sequentializer(tasks[i], tasks[i+1]), null);
-                    exec.execute(fs[i/2]);
-                }
-                for (int i = 0; i < fs.length; ++i) {
-                    fs[i].run();
-                }
-                try {
-                    for (int i = 0; i < fs.length; ++i) {
-                        fs[i].get();
-                    }
-                } catch (Exception e) {
-
-                }
             }
+
         }
+        catch (InterruptedException ie){
+
+        }
+
+        for(int i=0; i<size; i++){
+            LOGGER.info(finalScoreMatrix[i][0]);
+        }
+
+
+
     }
 
-    class Sequentializer implements Runnable{
-        private MultiplyTask first, second;
-        Sequentializer(MultiplyTask first, MultiplyTask second) {
-            this.first = first;
-            this.second = second;
-        }
-        public void run() {
-            first.run();
-            second.run();
-        }
+}
 
+class WorkerThread implements Runnable {
+
+    private int row;
+    private int col;
+    private String A[][];
+    private String B[][];
+    private int C[][];
+    private int D[][];
+
+
+    public WorkerThread(int row, int col, String A[][], String B[][], int C[][], int D[][]) {
+        this.row = row;
+        this.col = col;
+        this.A = A;
+        this.B = B;
+        this.C = C;
+        this.D = D;
     }
 
-    public static void main(String[] args) {
-
-
+    @Override
+    public void run() {
+        ScoreCalculationController scoreCalculationController = new ScoreCalculationController();
+        for(int k = 0; k < B.length; k++) {
+            C[row][col] += scoreCalculationController.getConflictScore(A[row][k], B[k][col]);
+        }
+        D[row][0] = D[row][0] + C[row][col];
 
     }
 

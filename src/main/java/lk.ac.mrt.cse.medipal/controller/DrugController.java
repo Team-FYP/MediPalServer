@@ -81,9 +81,9 @@ public class DrugController {
     public ArrayList<Drug> getDrugsByDiease(String diseaseID){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
-            String SQL = "SELECT * FROM  `drug` WHERE `disease_id`= ?";
+            String SQL = "SELECT drug.drug_id, drug.drug_name, drug.category_id, drug_disease.Disease FROM  drug INNER JOIN drug_disease ON drug_disease.Drug = drug.drug_id WHERE drug_disease.Disease=?";
             preparedStatement = connection.prepareStatement(SQL);
-            preparedStatement.setString(1, diseaseID);
+            preparedStatement.setInt(1, Integer.parseInt("2"));
             resultSet = preparedStatement.executeQuery();
             ArrayList<Drug> drugList = new ArrayList<Drug>();
             while (resultSet.next()){
@@ -91,6 +91,7 @@ public class DrugController {
                 drug.setDrug_id(String.valueOf(resultSet.getInt("drug_id")));
                 drug.setDrug_name(resultSet.getString("drug_name"));
                 drug.setCategory_id(resultSet.getString("category_id"));
+                drug.setDisease_id(resultSet.getString("Disease"));
                 drugList.add(drug);
             }
             return drugList;
@@ -264,103 +265,7 @@ public class DrugController {
     }
 
     //Inserting the d-d interactions to the hash map
-//    public HashMap<String, List<Integer>> getSeverityValueFromDBForDrugToDruginteraction(HashMap<String, List<Integer>> scoreValue){
-//
-//        String id = null;
-//        String drug_name1 = null;
-//        String drug_name2 = null;
-//
-//        try{
-//            connection = DB_Connection.getDBConnection().getConnection();
-//            String SQL_1 = "SELECT drug1_id, drug2_id, severity from d_d_interaction";
-//            preparedStatement = connection.prepareStatement(SQL_1);
-//            resultSet = preparedStatement.executeQuery();
-//
-//            while(resultSet.next()){
-//
-//                drug_name1 = getDrugNameByID(resultSet.getInt("drug1_id"));
-//                drug_name2 = getDrugNameByID(resultSet.getInt("drug2_id"));
-//                id = drug_name1 +"_"+ drug_name2;
-//                if(scoreValue.containsKey(id)){
-//                    scoreValue.get(id).add(resultSet.getInt("severity"));
-//                } else {
-//                    scoreValue.put(id, new ArrayList<Integer>());
-//
-//                }
-//
-//
-//            }
-//
-//        }catch(SQLException | IOException | PropertyVetoException ex) {
-//            LOGGER.error("Error getting category list", ex);
-//        } finally {
-//            try {
-//                DbUtils.closeQuietly(resultSet);
-//                DbUtils.closeQuietly(preparedStatement);
-//                DbUtils.close(connection);
-//            } catch (SQLException ex) {
-//                LOGGER.error("Error closing sql connection", ex);
-//            }
-//        }
-//
-//        return scoreValue;
-//    }
-
-
-    //Inserting the d-disease interactions to the hash map
-    public HashMap<String, List<Integer>> getSeverityValueFromDBForDrugToDiseaseinteraction(HashMap<String, List<Integer>> scoreValue){
-
-        String id = null;
-        String drug_name = null;
-        String disease_name = null;
-
-        try{
-            connection = DB_Connection.getDBConnection().getConnection();
-            String SQL_1 = "SELECT drug_id, disease_id, severity from d_di_interaction";
-            preparedStatement = connection.prepareStatement(SQL_1);
-            resultSet = preparedStatement.executeQuery();
-
-            while(resultSet.next()){
-
-                drug_name = getDrugNameByID(resultSet.getInt("drug_id"));
-
-                if (resultSet.getInt("disease_id") == 1)
-                    disease_name = "Diabetes";
-                else if (resultSet.getInt("disease_id") == 2)
-                    disease_name = "Hypertension";
-                else
-                    disease_name = "COPD";
-
-
-                id = drug_name +"_"+ disease_name;
-                if(scoreValue.containsKey(id)){
-                    scoreValue.get(id).add(resultSet.getInt("severity"));
-                } else {
-                    scoreValue.put(id, new ArrayList<Integer>());
-
-                }
-
-
-            }
-
-        }catch(SQLException | IOException | PropertyVetoException ex) {
-            LOGGER.error("Error getting category list", ex);
-        } finally {
-            try {
-                DbUtils.closeQuietly(resultSet);
-                DbUtils.closeQuietly(preparedStatement);
-                DbUtils.close(connection);
-            } catch (SQLException ex) {
-                LOGGER.error("Error closing sql connection", ex);
-            }
-        }
-
-        return scoreValue;
-    }
-
-
-    //Inserting the d-d interactions to the hash map
-    public HashMap<String, Integer> getSeverityValueFromDBForDrugToDruginteraction(){
+    public HashMap<String, Integer> getDrugToDrugConflictScore(){
 
         String id = null;
         String drug_name1 = null;
@@ -397,6 +302,49 @@ public class DrugController {
         for ( String key : scoreValue.keySet() ) {
             LOGGER.info(scoreValue.get(key));
         }
+        return scoreValue;
+    }
+
+    public HashMap<String, Integer> getDrugToDiseaseConflictScore(){
+
+        String id = null;
+        String drug_name = null;
+        String disease_name = null;
+        HashMap<String, Integer> scoreValue = new HashMap<>();
+
+        try{
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL_1 = "SELECT drug_id, disease_id, severity from d_di_interaction";
+            preparedStatement = connection.prepareStatement(SQL_1);
+            resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()){
+
+                drug_name = getDrugNameByID(resultSet.getInt("drug_id"));
+
+                if (resultSet.getInt("disease_id") == 1)
+                    disease_name = "diabetes";
+                else if (resultSet.getInt("disease_id") == 2)
+                    disease_name = "hypertension";
+                else if (resultSet.getInt("disease_id") == 3)
+                    disease_name = "copd";
+
+                id = drug_name +"_"+ disease_name;
+                scoreValue.put(id, resultSet.getInt("severity"));
+            }
+
+        }catch(SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting category list", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+
         return scoreValue;
     }
 }
