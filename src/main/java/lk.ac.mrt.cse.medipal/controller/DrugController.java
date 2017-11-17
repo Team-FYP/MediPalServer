@@ -121,7 +121,7 @@ public class DrugController {
             resultSet = preparedStatement.executeQuery();
             ArrayList<String> drugList = new ArrayList<String>();
             while (resultSet.next()){
-                if(categoryList.contains(resultSet.getString("CATEGORY_NAME")));
+                if(categoryList.contains(resultSet.getString("CATEGORY_NAME")))
                     drugList.add(resultSet.getString("drug_name"));
             }
             return drugList;
@@ -151,10 +151,10 @@ public class DrugController {
             resultSet = preparedStatement.executeQuery();
             ArrayList<String> categoryList = new ArrayList<String>();
             while (resultSet.next()){
-                if(drugList.contains(resultSet.getString("drug_name")));
-                    drugList.add(resultSet.getString("CATEGORY_NAME"));
+                if(drugList.contains(resultSet.getString("drug_name")))
+                    categoryList.add(resultSet.getString("CATEGORY_NAME"));
             }
-            return drugList;
+            return categoryList;
         } catch (SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error getting category list", ex);
         } finally {
@@ -299,9 +299,6 @@ public class DrugController {
             }
         }
 //        System.out.println(scoreValue.get(0));
-        for ( String key : scoreValue.keySet() ) {
-            LOGGER.info(scoreValue.get(key));
-        }
         return scoreValue;
     }
 

@@ -68,15 +68,21 @@ public class DrugResource {
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
 
-    /*@Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    @Path("/testhashmap")
-    public Response getDrug() {
-        DrugController drugController = new DrugController();
-        drugController.getSeverityValueFromDBForDrugToDruginteraction();
-        JsonObject returnObject = new JsonObject();
-
-        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
-    }*/
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @GET
+//    @Path("/testhashmap")
+//    public Response getDrug() {
+//        Gson gson = new Gson();
+//        DrugController drugController = new DrugController();
+//        ArrayList<String> categoryList = new ArrayList<>();
+//        categoryList.add("metformin");
+//        categoryList.add("sulfonylurea");
+//        JsonObject returnObject = new JsonObject();
+//
+//        ArrayList<String> categoryListNew = drugController.getDrugListByCategoryList(1, categoryList);
+//        JsonArray drugsArray = gson.toJsonTree(categoryListNew).getAsJsonArray();
+//        returnObject.add("drugsList",drugsArray);
+//        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+//    }
 }
