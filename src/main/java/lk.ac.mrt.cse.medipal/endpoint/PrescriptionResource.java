@@ -62,31 +62,8 @@ public class PrescriptionResource {
         Gson gson = new Gson();
         int prescriptionID = 0;
         Doctor doctor = new Doctor();
-        patient.setNic(jsonObject.get("nic").getAsString());
-        String disease_id = jsonObject.get("disease_id").getAsString();
-        String doctor_id = jsonObject.get("doctor_id").getAsString();
-        doctor.setRegistration_id(jsonObject.get("doctor_id").getAsString());
-
-
-        JSONObject drugsArrayObject = new JSONObject(jsonObject.toString());
-        JSONArray drugsArray = drugsArrayObject.getJSONArray("prescription_drugs");
-
-        for(int i=0; i<drugsArray.length(); i++){
-            PrescriptionDrug drug = new PrescriptionDrug();
-            JSONObject drugObject = drugsArray.getJSONObject(i);
-            drug.setDrug(drugController.getDrugDetails(drugObject.get("drug_id").toString()));
-            drug.setDosage(drugObject.get("dosage").toString());
-            drug.setFrequency(drugObject.get("frequency").toString());
-            drug.setRoute(drugObject.get("route").toString());
-            drug.setDuration(Integer.parseInt(drugObject.get("duration").toString()));
-            drug.setUseTime(drugObject.get("useTime").toString());
-            drug.setUnitSize(drugObject.get("unitSize").toString());
-            drug.setStartDate(drugObject.get("startDate").toString());
-            prescriptionDrugsArray.add(drug);
-        }
-
-
-        Prescription prescription = new Prescription(prescriptionID,prescriptionDrugsArray,doctor,patient,disease_id,doctor_id, null);
+        patient = gson.fromJson(jsonObject.get("patient").getAsJsonObject().toString(), Patient.class);
+        Prescription prescription = gson.fromJson(jsonObject.toString(), Prescription.class);
         PrescriptionController prescriptionController = new PrescriptionController();
         JsonObject returnObject = new JsonObject();
         boolean addPrescription = prescriptionController.addPrescription(prescription);

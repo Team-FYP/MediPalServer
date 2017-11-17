@@ -83,7 +83,7 @@ public class DrugController {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL = "SELECT drug.drug_id, drug.drug_name, drug.category_id, drug_disease.Disease FROM  drug INNER JOIN drug_disease ON drug_disease.Drug = drug.drug_id WHERE drug_disease.Disease=?";
             preparedStatement = connection.prepareStatement(SQL);
-            preparedStatement.setInt(1, Integer.parseInt("2"));
+            preparedStatement.setInt(1, Integer.parseInt(diseaseID));
             resultSet = preparedStatement.executeQuery();
             ArrayList<Drug> drugList = new ArrayList<Drug>();
             while (resultSet.next()){

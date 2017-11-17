@@ -1,7 +1,6 @@
 package lk.ac.mrt.cse.medipal.model;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Prescription {
     private int prescription_id;
@@ -9,7 +8,7 @@ public class Prescription {
     private ArrayList<PrescriptionDrug> prescription_drugs;
     private Doctor doctor;
     private Patient patient;
-    private String disease;
+    private String disease_id;
     private String doctor_id;
     private String prescription_date;
 
@@ -17,12 +16,12 @@ public class Prescription {
         return doctor_id;
     }
 
-    public Prescription(int prescription_id, ArrayList<PrescriptionDrug> prescription_drugs, Doctor doctor, Patient patient, String disease, String doctor_id, String prescription_date) {
+    public Prescription(int prescription_id, ArrayList<PrescriptionDrug> prescription_drugs, Doctor doctor, Patient patient, String disease_id, String doctor_id, String prescription_date) {
         this.prescription_id = prescription_id;
         this.prescription_drugs = prescription_drugs;
         this.doctor = doctor;
         this.patient = patient;
-        this.disease = disease;
+        this.disease_id = disease_id;
         this.doctor_id = doctor_id;
         this.prescription_date = prescription_date;
     }
@@ -51,8 +50,8 @@ public class Prescription {
         return patient;
     }
 
-    public String getDisease() {
-        return disease;
+    public String getDisease_id() {
+        return disease_id;
     }
 
     public int getPrescription_id() {
@@ -71,8 +70,8 @@ public class Prescription {
         this.patient = patient;
     }
 
-    public void setDisease(String disease) {
-        this.disease = disease;
+    public void setDisease_id(String disease_id) {
+        this.disease_id = disease_id;
     }
 
     public void setPrescription_id(int prescription_id) {

@@ -28,7 +28,7 @@ public class PrescriptionController {
     public ArrayList<Prescription> getPrescriptionsByPatient(String patientID){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
-            String SQL = "SELECT `prescription`.`PRESCRIPTION_ID`, `prescription`.`DATE`, `prescription`.`DISEASE_DISEASE_ID`, `prescription`.`PATIENT_NIC`, `prescription`.`DOCTOR_ID`, `disease`.`DISEASE_NAME` FROM `prescription` INNER JOIN `disease` ON `prescription`.`DISEASE_DISEASE_ID`=`disease`.`DISEASE_ID` WHERE `prescription`.`PATIENT_NIC` = ?";
+            String SQL = "SELECT `prescription`.`PRESCRIPTION_ID`, `prescription`.`DATE`, `prescription`.`DISEASE_DISEASE_ID`, `prescription`.`PATIENT_NIC`, `prescription`.`DOCTOR_ID`, `disease`.`DISEASE_NAME` FROM `prescription` INNER JOIN `disease` ON `prescription`.`DISEASE_DISEASE_ID`=`disease`.`DISEASE_ID` WHERE `prescription`.`PATIENT_NIC` = ? ORDER BY `prescription`.`DATE` DESC ";
             preparedStatement = connection.prepareStatement(SQL);
             preparedStatement.setString(1, patientID);
             resultSet = preparedStatement.executeQuery();
@@ -38,7 +38,7 @@ public class PrescriptionController {
                 prescription.setPrescription_id(resultSet.getInt("PRESCRIPTION_ID"));
                 String prescriptionDate=resultSet.getDate("DATE").toString();
                 prescription.setPrescription_date(prescriptionDate);
-                prescription.setDisease(resultSet.getString("DISEASE_NAME"));
+                prescription.setDisease_id(resultSet.getString("DISEASE_NAME"));
                 prescription.setDoctor_id(resultSet.getString("DOCTOR_ID"));
                 prescriptionList.add(prescription);
             }
@@ -94,13 +94,14 @@ public class PrescriptionController {
         PreparedStatement preparedStatementDrugRoute;
         try {
             connection = DB_Connection.getDBConnection().getConnection();
+            connection.setAutoCommit(false);
             String SQLPRESCRIPTION = "INSERT INTO `prescription` " +
                     " (`DATE`,`PATIENT_NIC`,`DISEASE_DISEASE_ID`,`DOCTOR_ID`) " +
                     "VALUES (?, ?, ?, ?)";
             preparedStatement = connection.prepareStatement(SQLPRESCRIPTION);
             preparedStatement.setDate(1, today);
             preparedStatement.setString(2, prescription.getPatient().getNic());
-            preparedStatement.setString(3, prescription.getDisease());
+            preparedStatement.setString(3, prescription.getDisease_id());
             preparedStatement.setString(4, prescription.getDoctor().getRegistration_id());
             preparedStatement.executeUpdate();
             ResultSet keys = preparedStatement.getGeneratedKeys();
@@ -125,6 +126,7 @@ public class PrescriptionController {
             preparedStatementDrug = connection.prepareStatement(SQLDRUGS, Statement.RETURN_GENERATED_KEYS);
             for (PrescriptionDrug drug:prescription.getPrescription_drugs()
                     ) {
+                LOGGER.info(drug.getDrug().getDrug_id());
                 preparedStatementDrug.setString(1, drug.getDrug().getDrug_id());
                 preparedStatementDrug.setInt(2, key);
                 preparedStatementDrug.setString(3, drug.getDosage());
@@ -137,9 +139,17 @@ public class PrescriptionController {
                 preparedStatementDrug.setDate(9, startDate);
                 preparedStatementDrug.executeUpdate();
             }
+            DbUtils.commitAndCloseQuietly(connection);
 
             status = true;
         } catch (SQLException | IOException | PropertyVetoException ex) {
+
+            try {
+                DbUtils.rollback(connection) ;
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                LOGGER.error("Error rollback", ex);
+            }
             LOGGER.error("Error adding Prescription", ex);
         } finally {
             try {
