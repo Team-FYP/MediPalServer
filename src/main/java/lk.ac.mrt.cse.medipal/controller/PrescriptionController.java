@@ -16,8 +16,8 @@ import java.util.Calendar;
 public class PrescriptionController {
     private static PreparedStatement preparedStatement;
     private static ResultSet resultSet;
-    private static Connection connection;
     public static Logger LOGGER = org.apache.log4j.Logger.getLogger(PrescriptionController.class);
+    private static Connection connection;
 
     public boolean savePrescription(Prescription prescription){
         boolean status = false;
@@ -207,7 +207,6 @@ public class PrescriptionController {
         java.sql.Date today = new java.sql.Date(Calendar.getInstance().getTime().getTime());
         PreparedStatement preparedStatementPrescription;
         ResultSet resultSetPrescription;
-        ScoreCalculationController scoreCalculationController = new ScoreCalculationController();
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL1 = "SELECT prescription.PRESCRIPTION_ID" +
@@ -220,7 +219,6 @@ public class PrescriptionController {
             resultSet = preparedStatement.executeQuery();
             resultSet.last();
             ArrayList<PrescriptionDrug> lastPrescriptionDrugArray = new ArrayList<>();
-            PrescriptionDrug lastPrescriptionDrug = new PrescriptionDrug();
             Prescription lastPrescription = new Prescription();
 
             int prescriptionID = resultSet.getInt("Prescription_ID");
@@ -232,14 +230,13 @@ public class PrescriptionController {
                     "FROM drug INNER JOIN drug_prescription ON drug.drug_id=drug_prescription.Drug_ID INNER JOIN prescription ON drug_prescription.Prescription_ID=prescription.PRESCRIPTION_ID INNER JOIN drug_route ON drug_route.route_id=drug_prescription.Route " +
                     "AND prescription.PRESCRIPTION_ID=?";
 
-
             preparedStatementPrescription = connection.prepareStatement(SQL);
             preparedStatementPrescription.setInt(1, prescriptionID);
             resultSetPrescription = preparedStatementPrescription.executeQuery();
 
-
             while(resultSetPrescription.next()){
                 Drug drug = new Drug();
+                PrescriptionDrug lastPrescriptionDrug = new PrescriptionDrug();
                 drug.setDrug_id(resultSetPrescription.getString("Drug_ID"));
                 drug.setDrug_name(resultSetPrescription.getString("drug_name"));
                 drug.setCategory_id(resultSetPrescription.getString("category_id"));
@@ -254,6 +251,7 @@ public class PrescriptionController {
                 String startDate=resultSetPrescription.getDate("Start_Date").toString();
                 lastPrescriptionDrug.setStartDate(startDate);
                 lastPrescriptionDrugArray.add(lastPrescriptionDrug);
+                LOGGER.info(lastPrescriptionDrug.getDrug().getDrug_name());
             }
             lastPrescription.setPrescription_drugs(lastPrescriptionDrugArray);
             return lastPrescription;
