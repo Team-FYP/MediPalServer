@@ -4,30 +4,31 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 import com.microsoft.z3.*;
+import org.apache.log4j.Logger;
 
 public class DiseasePathController {
 
-    final String DIABETES = "diabetes";
+    final String DIABETES = "Diabetes";
     final String METFORMIN = "metformin";
     final String SULFONYLUREA = "sulfonylurea";
     final String SITAGLIPTIN = "sitagliptin";
     final String PIOGLITAZONE = "pioglitazone";
-    final String EMPAGLIFLOZIN = "empagliflozin";
+    final String EMPAGLIFLOZIN = "empaglifozin";
     final String ACARBOSE = "acarbose";
     final String INSULIN = "insulin";
 
-    final String COPD = "copd";
+    final String COPD = "COPD";
     final String CORTICOSTEROID = "corticosteroid";
-    final String SHORTBRONCHODILATOR = "short-bronchodilator";
-    final String LONGBRONCHODILATOR = "long-brochodilator";
+    final String SHORTBRONCHODILATOR = "short acting bronchodilators";
+    final String LONGBRONCHODILATOR = "long acting bronchodilators";
 
-    final String HYPERTENSION = "hypertension";
-    final String ACE = "ace-inhibitor";
-    final String ARB = "arb";
-    final String CCB = "ccb";
-    final String DIURETIC = "diuretic";
-    final String ALPHA = "alpha-blocker";
-    final String BETA = "beta-blocker";
+    final String HYPERTENSION = "Hypertension";
+    final String ACE = "ACE Inhabitors";
+    final String ARB = "ARB";
+    final String CCB = "CCB";
+    final String DIURETIC = "Diuretic";
+    final String ALPHA = "alpha-blockers";
+    final String BETA = "beta-blockers";
 
     @SuppressWarnings("serial")
     public class TestFailedException extends Exception
@@ -37,6 +38,8 @@ public class DiseasePathController {
             super("Check FAILED");
         }
     };
+
+    public static Logger LOGGER = org.apache.log4j.Logger.getLogger(DiseasePathController.class);
 
     DrugController drugController = new DrugController();
 
@@ -159,7 +162,7 @@ public class DiseasePathController {
             int e;
 
             if (m.Evaluate(nd3, true).IsTrue() && m.Evaluate(nd4, true).IsTrue()) {
-
+                LOGGER.info("nd3 and nd4");
                 pathList = new String[a*c][4];
                 for(int i=0; i<a; i++){
                     for(int j=0; j<c; j++){
@@ -174,6 +177,7 @@ public class DiseasePathController {
                 }
 
             } else if (m.Evaluate(nd3, true).IsTrue()) {
+                LOGGER.info("nd3");
                 pathList = new String[a*c][3];
                 for(int i=0; i<a; i++){
                     for(int j=0; j<c; j++){
@@ -186,12 +190,14 @@ public class DiseasePathController {
                     }
                 }
             } else if (m.Evaluate(nd2, true).IsTrue() && m.Evaluate(nd4, true).IsTrue()) {
+                LOGGER.info("nd2 and nd4");
                 pathList = new String[1][3];
                 pathList[0][0] = DIABETES;
                 pathList[0][1] = ACARBOSE;
                 pathList[0][2] = INSULIN;
 
             } else if (m.Evaluate(nd0, true).IsTrue()) {
+                LOGGER.info("nd0");
                 pathList = new String[a+b][2];
                 for (int i=0; i<a; i++) {
                     pathList[i][0] = DIABETES;
@@ -203,9 +209,9 @@ public class DiseasePathController {
 
             for (int i = 0; i < pathList.length; i++) {
                 for (int j = 0; j < pathList[0].length; j++) {
-                    System.out.print(pathList[i][j] + " ");
+                    LOGGER.info(pathList[i][j] + " ");
                 }
-                System.out.println("\n");
+                LOGGER.info("end of path");
             }
 
         }
@@ -237,6 +243,19 @@ public class DiseasePathController {
         String[] node2 = list2.toArray(new String[list2.size()]);
         String[] node3 = list3.toArray(new String[list3.size()]);
 
+        LOGGER.info("node 1 path list ...");
+        for(int i=0; i<node1.length; i++){
+            LOGGER.info(node1[i]);
+        }
+        LOGGER.info("node 2 path list ...");
+        for(int i=0; i<node2.length; i++){
+            LOGGER.info(node2[i]);
+        }
+        LOGGER.info("node 3 path list ...");
+        for(int i=0; i<node3.length; i++){
+            LOGGER.info(node3[i]);
+        }
+
         BoolExpr expNd0 = ctx.MkBoolConst("expNd0");
         BoolExpr expNd1 = ctx.MkBoolConst("expNd1");
         BoolExpr expNd2 = ctx.MkBoolConst("expNd2");
@@ -252,6 +271,7 @@ public class DiseasePathController {
         BoolExpr exp3 = ctx.MkBoolConst("exp3");
 
         for(String med : prescribeDrugs){
+            LOGGER.info("prescribed drug " + med);
             if(med.equalsIgnoreCase(COPD)){
                 medi[0] = ctx.MkTrue();
             }else if(med.equalsIgnoreCase(CORTICOSTEROID)){
@@ -277,6 +297,11 @@ public class DiseasePathController {
         exp2 = ctx.MkImplies(ctx.MkOr(new BoolExpr[]{nd1, nd2}), nd0);
         exp3 = ctx.MkImplies(ctx.MkOr(new BoolExpr[]{nd1, nd2}), nd3);
 
+        LOGGER.info("medi0 " + medi[0].IsTrue());
+        LOGGER.info("medi1 " + medi[1].IsTrue());
+        LOGGER.info("medi2 " + medi[2].IsTrue());
+        LOGGER.info("medi3 " + medi[3].IsTrue());
+
         Solver s = ctx.MkSolver();
 
         s.Assert(expNd0);
@@ -299,7 +324,13 @@ public class DiseasePathController {
             int c = node3.length;
             int e;
 
+            LOGGER.info("nd0 " + m.Evaluate(nd0, true));
+            LOGGER.info("nd1 " + m.Evaluate(nd1, true));
+            LOGGER.info("nd2 " + m.Evaluate(nd2, true));
+            LOGGER.info("nd3 " + m.Evaluate(nd3, true));
+
             if(m.Evaluate(nd3, true).IsTrue() && m.Evaluate(nd1, true).IsTrue()){
+                LOGGER.info("nd3 & nd1 ......");
                 pathList = new String[a*c][3];
                 for(int i=0; i<a; i++){
                     for(int j=0; j<c; j++){
@@ -313,23 +344,25 @@ public class DiseasePathController {
 
                 }
             }else if(m.Evaluate(nd3, true).IsTrue() && m.Evaluate(nd2, true).IsTrue()){
-                pathList = new String[a*b][3];
-                for(int i=0; i<a; i++){
-                    for(int j=0; j<b; j++){
-                        e = (i * b) + j;
-                        if(e < b*(i+1)){
-                            pathList[e][1] = node1[i];
+                LOGGER.info("nd3 & nd2 ......");
+                pathList = new String[b*c][3];
+                for(int i=0; i<b; i++){
+                    for(int j=0; j<c; j++){
+                        e = (i * c) + j;
+                        if(e < c*(i+1)){
+                            pathList[e][1] = node2[i];
                         }
                         pathList[e][0] = COPD;
-                        pathList[e][2] = node2[e%b];
+                        pathList[e][2] = node3[e%c];
                     }
 
                 }
             }else if(m.Evaluate(nd0, true).IsTrue()){
+                LOGGER.info("nd0 ......");
                 pathList = new String[a+b][2];
                 for(int i=0; i<a; i++){
                     pathList[i][0] = COPD;
-                    pathList[i][1] = node1[i%a];
+                    pathList[i][1] = node1[i];
                 }
                 for(int j=a; j<a+b; j++){
                     pathList[j][0] = COPD;
@@ -438,12 +471,13 @@ public class DiseasePathController {
         s.Assert(expNd2);
         s.Assert(expNd3);
         s.Assert(expNd4);
-
+        LOGGER.info("before if conditions .................");
         if(medi[4].IsTrue()){
             s.Assert(exp6);
             s.Assert(exp5);
             s.Assert(exp1);
         }else if(medi[3].IsTrue()) {
+            LOGGER.info("within CCB .................");
             s.Assert(exp6);
             s.Assert(exp4);
             s.Assert(exp3);
@@ -452,8 +486,16 @@ public class DiseasePathController {
             s.Assert(exp1);
             s.Assert(exp2);
         }else if(medi[0].IsTrue()){
+            LOGGER.info("within Hyp .................");
             s.Assert(exp1);
         }
+        LOGGER.info("medi0 " + medi[0].IsTrue());
+        LOGGER.info("medi1 " + medi[1].IsTrue());
+        LOGGER.info("medi2 " + medi[2].IsTrue());
+        LOGGER.info("medi3 " + medi[3].IsTrue());
+        LOGGER.info("medi4 " + medi[4].IsTrue());
+        LOGGER.info("medi5 " + medi[5].IsTrue());
+        LOGGER.info("medi6 " + medi[6].IsTrue());
 
         if (s.Check() == Status.SATISFIABLE) {
             Model m = s.Model();
@@ -548,7 +590,6 @@ public class DiseasePathController {
     private String[][] findDiabetesLevelDown(Context ctx, String[] prescribeDrugs) throws Z3Exception, TestFailedException {
 
 
-        ArrayList<String> seletedMeds = new ArrayList<>();
         String[][] pathList = null;
 
         BoolExpr[] medi = new BoolExpr[8];
@@ -640,7 +681,7 @@ public class DiseasePathController {
             s.Assert(exp3);
             s.Assert(exp4);
             nd4 = ctx.MkFalse();
-        } else if (medi[7].IsTrue() && medi[2].IsTrue()) {
+        } else if (medi[7].IsTrue() && medi[3].IsTrue()) {
             s.Assert(exp1);
             s.Assert(exp2);
             s.Assert(exp4);
@@ -820,28 +861,16 @@ public class DiseasePathController {
                     pathList[j][1] = node2[j%b];
                 }
             }else if(m.Evaluate(nd1, true).IsTrue()){
-                pathList = new String[a*c][2];
+                pathList = new String[a][2];
                 for(int i=0; i<a; i++){
-                    for(int j=0; j<c; j++){
-                        e = (i * c) + j;
-                        if(e < c*(i+1)){
-                            pathList[e][1] = node1[i];
-                        }
-                        pathList[e][0] = COPD;
-                    }
-
+                    pathList[i][1] = node1[i];
+                    pathList[i][0] = COPD;
                 }
             }else if(m.Evaluate(nd2, true).IsTrue()){
-                pathList = new String[a*b][2];
-                for(int i=0; i<a; i++){
-                    for(int j=0; j<b; j++){
-                        e = (i * b) + j;
-                        if(e < b*(i+1)){
-                            pathList[e][1] = node1[i];
-                        }
-                        pathList[e][0] = COPD;
-                    }
-
+                pathList = new String[b][2];
+                for(int i=0; i<b; i++){
+                    pathList[i][1] = node1[i];
+                    pathList[i][0] = COPD;
                 }
             }
 
@@ -964,17 +993,17 @@ public class DiseasePathController {
             s.Assert(exp5);
             nd4 = ctx.MkFalse();
         }else if(medi[3].IsTrue() && medi[4].IsTrue()) {
-            s.Assert(exp5);
-            s.Assert(exp4);
             s.Assert(exp3);
+            s.Assert(exp4);
+            s.Assert(exp5);
+            nd3 = ctx.MkFalse();
+        }else if(medi[4].IsTrue()){
+            s.Assert(exp4);
+            s.Assert(exp5);
             nd3 = ctx.MkFalse();
         }else if(medi[3].IsTrue()){
-            s.Assert(exp5);
             s.Assert(exp4);
-            nd3 = ctx.MkFalse();
-        }else if(medi[2].IsTrue()){
             s.Assert(exp5);
-            s.Assert(exp4);
             nd2 = ctx.MkFalse();
         }
 
@@ -1035,11 +1064,15 @@ public class DiseasePathController {
         return pathList;
     }
 
-    private String[][] buildArray(String[] node, int index, String[] prescribedDrugs){
+    private String[][] buildArray(String[] node, int index, String[] prescribedDrugs, String changedDrug){
         String[][] pathList = null;
         pathList = new String[node.length][prescribedDrugs.length];
-        for(int i=0; i<node.length; i++){
-            pathList[i][index] = node[i];
+        for(int j=0; j<prescribedDrugs.length; j++){
+            pathList[0][j] = prescribedDrugs[j];
+        }
+        for(int i=1; i<node.length; i++){
+            if(!node[i].equalsIgnoreCase(changedDrug))
+                pathList[i][index] = node[i];
             for(int j=0; j<prescribedDrugs.length; j++){
                 if(j!=index)
                     pathList[i][j] = prescribedDrugs[j];
@@ -1060,9 +1093,9 @@ public class DiseasePathController {
             String[] node1 = list1.toArray(new String[list1.size()]);
             String[] node3 = list3.toArray(new String[list3.size()]);
             if(list1.contains(changedDrug)){
-                return buildArray(node1, index, prescribedDrugs);
+                return buildArray(node1, index, prescribedDrugs, changedDrug);
             }else if(list3.contains(changedDrug)){
-                return buildArray(node3, index, prescribedDrugs);
+                return buildArray(node3, index, prescribedDrugs, changedDrug);
             }
         }else if(disease.equalsIgnoreCase(COPD)){
 
@@ -1075,11 +1108,11 @@ public class DiseasePathController {
             String[] node3 = list3.toArray(new String[list3.size()]);
 
             if(list1.contains(changedDrug)){
-                return buildArray(node1, index, prescribedDrugs);
+                return buildArray(node1, index, prescribedDrugs, changedDrug);
             }else if(list2.contains(changedDrug)){
-                return buildArray(node2, index, prescribedDrugs);
+                return buildArray(node2, index, prescribedDrugs, changedDrug);
             }else if(list3.contains(changedDrug)){
-                return buildArray(node3, index, prescribedDrugs);
+                return buildArray(node3, index, prescribedDrugs, changedDrug);
             }
 
         }else if(disease.equalsIgnoreCase(HYPERTENSION)){
@@ -1094,13 +1127,13 @@ public class DiseasePathController {
             String[] node4 = list4.toArray(new String[list4.size()]);
 
             if(list1.contains(changedDrug)){
-                return buildArray(node1, index, prescribedDrugs);
+                return buildArray(node1, index, prescribedDrugs, changedDrug);
             }else if(list2.contains(changedDrug)){
-                return buildArray(node2, index, prescribedDrugs);
+                return buildArray(node2, index, prescribedDrugs, changedDrug);
             }else if(list3.contains(changedDrug)){
-                return buildArray(node3, index, prescribedDrugs);
+                return buildArray(node3, index, prescribedDrugs, changedDrug);
             }else if(list4.contains(changedDrug)){
-                return buildArray(node4, index, prescribedDrugs);
+                return buildArray(node4, index, prescribedDrugs, changedDrug);
             }
         }
 

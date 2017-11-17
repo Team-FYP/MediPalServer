@@ -1,16 +1,16 @@
 package lk.ac.mrt.cse.medipal.endpoint;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.microsoft.z3.Z3Exception;
-import lk.ac.mrt.cse.medipal.controller.DiseaseController;
-import lk.ac.mrt.cse.medipal.controller.DiseasePathController;
-import lk.ac.mrt.cse.medipal.controller.DrugController;
-import lk.ac.mrt.cse.medipal.controller.ScoreCalculationController;
+import lk.ac.mrt.cse.medipal.controller.*;
+import org.json.JSONArray;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
+import java.util.Arrays;
 
 @Path("/prediction")
 public class PredictionResource {
@@ -18,37 +18,32 @@ public class PredictionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    @Path("/druglist/{id}")
-    public Response getSuitableDrugs(@PathParam("id") String patientID, String disease) throws Z3Exception, DiseasePathController.TestFailedException {
+    @Path("/levelupdruglist/{id}/{disease}")
+    public Response getLevelUpDrugs(@PathParam("id") String patientID, @PathParam("disease") String disease) throws Z3Exception, DiseasePathController.TestFailedException {
         Gson gson = new Gson();
-        DiseaseController diseaseController = new DiseaseController();
-        DrugController drugController = new DrugController();
-        DiseasePathController pathController = new DiseasePathController();
-        ScoreCalculationController calculationController = new ScoreCalculationController();
-        String diseaseId = diseaseController.getDiseaseId(disease);
-        ArrayList<String> currentDrugs = drugController.getRecentDrugsByDisease(patientID, diseaseId);
-        ArrayList<String> patientHistory = new ArrayList<>();
-        for(int i=1; i<=3; i++){
-            ArrayList<String> list = drugController.getRecentDrugsByDisease(patientID, Integer.toString(i));
-            if(list != null)
-                if(i == 1)
-                    list.add("diabetes");
-                else if(i == 2){
-                    list.add("hypertension");
-                }else if(i == 3){
-                    list.add("copd");
-                }
-                patientHistory.addAll(list);
-        }
+        JsonObject returnObject = new JsonObject();
+        PredictionController predictionController = new PredictionController();
+        String[] levelUpDrugs = predictionController.getLevelUpDrugs(patientID, disease);
+        JsonArray drugList = gson.toJsonTree(Arrays.asList(levelUpDrugs)).getAsJsonArray();
+        returnObject.add("drugList", drugList);
+        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
 
-//        ArrayList<String> categoryList = drugController.getCategoryListByDrugList(diseaseId, currentDrugs);
-//        categoryList.add(disease);
-//        ArrayList<String> selectedCategoryList = pathController.findDiseaseMeds(disease, categoryList.toArray(new String[categoryList.size()]));
-//        ArrayList<String> selectedDrugList = drugController.getDrugListByCategoryList(diseaseId, selectedCategoryList);
-//        selectedDrugList.add(disease);
-//        Object[] matrices = calculationController.buidArrays(selectedDrugList.toArray(new String[selectedDrugList.size()]), patientHistory.toArray(new String[patientHistory.size()]));
-
-        return null;
     }
+
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/leveldowndruglist/{id}/{disease}")
+    public Response getLevelDownDrugs(@PathParam("id") String patientID, @PathParam("disease") String disease) throws Z3Exception, DiseasePathController.TestFailedException {
+        Gson gson = new Gson();
+        JsonObject returnObject = new JsonObject();
+        PredictionController predictionController = new PredictionController();
+        String[] levelUpDrugs = predictionController.getLevelDownDrugs(patientID, disease);
+        JsonArray drugList = gson.toJsonTree(Arrays.asList(levelUpDrugs)).getAsJsonArray();
+        returnObject.add("drugList", drugList);
+        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+
+    }
+
 
 }

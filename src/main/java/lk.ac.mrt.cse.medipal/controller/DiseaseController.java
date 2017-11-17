@@ -76,7 +76,7 @@ public class DiseaseController {
         return null;
     }
 
-    public String getDiseaseId(String diseaseName){
+    public int getDiseaseId(String diseaseName){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL = "SELECT * FROM  `disease` WHERE `DISEASE_NAME` = ?";
@@ -84,7 +84,7 @@ public class DiseaseController {
             preparedStatement.setString(1, diseaseName);
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()){
-                return resultSet.getString("DISEASE_ID");
+                return resultSet.getInt("DISEASE_ID");
             }
         } catch (SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error getting disease details", ex);
@@ -97,7 +97,7 @@ public class DiseaseController {
                 LOGGER.error("Error closing sql connection", ex);
             }
         }
-        return null;
+        return -1;
     }
 
 }

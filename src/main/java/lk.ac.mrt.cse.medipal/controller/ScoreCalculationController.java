@@ -2,6 +2,9 @@ package lk.ac.mrt.cse.medipal.controller;
 
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class ScoreCalculationController {
@@ -25,11 +28,14 @@ public class ScoreCalculationController {
         return 0;
     }
 
-    public void multiplyMatrices(String[][] pathList, String[][] patientHistory){
+    public int getBestPathId(String[][] pathList, String[][] patientHistory){
 
         int size = pathList[0].length;
+        String[] bestPath = null;
         int[][] scoreMatrix = new int[size][size];
         int[][] finalScoreMatrix = new int[size][1];
+        Integer[] transpose = new Integer[size];
+        int index;
 
         int threadcount = 0;
         Thread[] thread = new Thread[size*size];
@@ -55,8 +61,53 @@ public class ScoreCalculationController {
             LOGGER.info(finalScoreMatrix[i][0]);
         }
 
+        for(int i=0; i<size; i++){
+            transpose[i] = finalScoreMatrix[i][0];
+        }
+
+        index = Arrays.asList(transpose).indexOf(Collections.max(Arrays.asList(transpose)));
+
+        return index;
+    }
 
 
+    public Object[] getConflictsWithSuggestions(String[][] pathList, String[][] patientHistory, int index){
+
+        int size = pathList[0].length;
+        ArrayList<String> conflictedDrugs = new ArrayList<>();
+        ArrayList<String> sugestedDrugs = new ArrayList<>();
+        int[][] scoreMatrix = new int[size][size];
+        int[][] finalScoreMatrix = new int[size][1];
+        final int THRESHOLD = -5000;
+
+        int threadcount = 0;
+        Thread[] thread = new Thread[size*size];
+
+        try {
+            for(int i=0; i < size; i++) {
+                for(int j=0; j<size; j++ ) {
+                    thread[threadcount] = new Thread(new WorkerThread(i, j, pathList, patientHistory, scoreMatrix, finalScoreMatrix));
+                    thread[threadcount].start();
+
+                    thread[threadcount].join();
+                    threadcount++;
+                }
+            }
+        }
+        catch (InterruptedException ie){
+
+        }
+
+        for(int i=0; i < size; i++){
+            if(scoreMatrix[0][i] <= THRESHOLD){
+                conflictedDrugs.add(patientHistory[0][i]);
+            }
+            if(finalScoreMatrix[i][0] > THRESHOLD){
+                sugestedDrugs.add(pathList[i][index]);
+            }
+        }
+
+        return new Object[]{conflictedDrugs, sugestedDrugs};
     }
 
 }
