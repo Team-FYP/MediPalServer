@@ -81,9 +81,9 @@ public class DrugController {
     public ArrayList<Drug> getDrugsByDiease(String diseaseID){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
-            String SQL = "SELECT * FROM  `drug` WHERE `disease_id`= ?";
+            String SQL = "SELECT drug.drug_id, drug.drug_name, drug.category_id, drug_disease.Disease FROM  drug INNER JOIN drug_disease ON drug_disease.Drug = drug.drug_id WHERE drug_disease.Disease=?";
             preparedStatement = connection.prepareStatement(SQL);
-            preparedStatement.setString(1, diseaseID);
+            preparedStatement.setInt(1, Integer.parseInt("2"));
             resultSet = preparedStatement.executeQuery();
             ArrayList<Drug> drugList = new ArrayList<Drug>();
             while (resultSet.next()){
@@ -91,6 +91,7 @@ public class DrugController {
                 drug.setDrug_id(String.valueOf(resultSet.getInt("drug_id")));
                 drug.setDrug_name(resultSet.getString("drug_name"));
                 drug.setCategory_id(resultSet.getString("category_id"));
+                drug.setDisease_id(resultSet.getString("Disease"));
                 drugList.add(drug);
             }
             return drugList;
@@ -120,7 +121,7 @@ public class DrugController {
             resultSet = preparedStatement.executeQuery();
             ArrayList<String> drugList = new ArrayList<String>();
             while (resultSet.next()){
-                if(categoryList.contains(resultSet.getString("CATEGORY_NAME")));
+                if(categoryList.contains(resultSet.getString("CATEGORY_NAME")))
                     drugList.add(resultSet.getString("drug_name"));
             }
             return drugList;
@@ -150,10 +151,10 @@ public class DrugController {
             resultSet = preparedStatement.executeQuery();
             ArrayList<String> categoryList = new ArrayList<String>();
             while (resultSet.next()){
-                if(drugList.contains(resultSet.getString("drug_name")));
-                    drugList.add(resultSet.getString("CATEGORY_NAME"));
+                if(drugList.contains(resultSet.getString("drug_name")))
+                    categoryList.add(resultSet.getString("CATEGORY_NAME"));
             }
-            return drugList;
+            return categoryList;
         } catch (SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error getting category list", ex);
         } finally {
@@ -298,9 +299,9 @@ public class DrugController {
             }
         }
 //        System.out.println(scoreValue.get(0));
-        for ( String key : scoreValue.keySet() ) {
+        /*for ( String key : scoreValue.keySet() ) {
             LOGGER.info(scoreValue.get(key));
-        }
+        }*/
         return scoreValue;
     }
 

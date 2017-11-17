@@ -6,7 +6,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lk.ac.mrt.cse.medipal.controller.DiseaseController;
+import lk.ac.mrt.cse.medipal.controller.DrugController;
 import lk.ac.mrt.cse.medipal.model.Disease;
+import lk.ac.mrt.cse.medipal.model.Drug;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -45,6 +47,21 @@ public class DiseaseResource {
         String diseaseDetails = gson.toJson(diseaseDetail);
         JsonObject diseaseDetailObject = new JsonParser().parse(diseaseDetails).getAsJsonObject();
         returnObject.add("diseaseDetails", diseaseDetailObject);
+
+        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+    }
+
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/{id}/drugs")
+    public Response allDrugs(@PathParam("id") String id) {
+        Gson gson = new Gson();
+        DrugController drugController = new DrugController();
+        JsonObject returnObject = new JsonObject();
+        ArrayList<Drug> drugsList = drugController.getDrugsByDiease(id);
+        JsonArray drugsArray = gson.toJsonTree(drugsList).getAsJsonArray();
+        returnObject.add("itemsList",drugsArray);
 
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }

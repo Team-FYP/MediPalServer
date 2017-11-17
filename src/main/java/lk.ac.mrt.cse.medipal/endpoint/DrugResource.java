@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lk.ac.mrt.cse.medipal.controller.DrugController;
 import lk.ac.mrt.cse.medipal.model.Drug;
+import org.apache.log4j.Logger;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -17,6 +18,8 @@ import java.util.ArrayList;
  */
 @Path("/drug")
 public class DrugResource {
+    public static Logger LOGGER = org.apache.log4j.Logger.getLogger(DrugResource.class);
+
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @GET
@@ -44,7 +47,8 @@ public class DrugResource {
         String drugDetails = gson.toJson(drugDetail);
         JsonObject drugDetailObject = new JsonParser().parse(drugDetails).getAsJsonObject();
         returnObject.add("drugDetails", drugDetailObject);
-
+        LOGGER.info("Working Directory = " +
+                System.getProperty("user.dir"));
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
 
@@ -68,7 +72,7 @@ public class DrugResource {
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
 
-    @Consumes(MediaType.APPLICATION_JSON)
+    /*@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/testhashmap")
@@ -78,5 +82,5 @@ public class DrugResource {
         JsonObject returnObject = new JsonObject();
 
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
-    }
+    }*/
 }

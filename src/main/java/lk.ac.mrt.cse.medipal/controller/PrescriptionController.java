@@ -16,8 +16,8 @@ import java.util.Calendar;
 public class PrescriptionController {
     private static PreparedStatement preparedStatement;
     private static ResultSet resultSet;
-    private static Connection connection;
     public static Logger LOGGER = org.apache.log4j.Logger.getLogger(PrescriptionController.class);
+    private static Connection connection;
 
     public boolean savePrescription(Prescription prescription){
         boolean status = false;
@@ -220,7 +220,6 @@ public class PrescriptionController {
             resultSet = preparedStatement.executeQuery();
             resultSet.last();
             ArrayList<PrescriptionDrug> lastPrescriptionDrugArray = new ArrayList<>();
-            PrescriptionDrug lastPrescriptionDrug = new PrescriptionDrug();
             Prescription lastPrescription = new Prescription();
 
             int prescriptionID = resultSet.getInt("Prescription_ID");
@@ -240,6 +239,7 @@ public class PrescriptionController {
 
             while(resultSetPrescription.next()){
                 Drug drug = new Drug();
+                PrescriptionDrug lastPrescriptionDrug = new PrescriptionDrug();
                 drug.setDrug_id(resultSetPrescription.getString("Drug_ID"));
                 drug.setDrug_name(resultSetPrescription.getString("drug_name"));
                 drug.setCategory_id(resultSetPrescription.getString("category_id"));

@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lk.ac.mrt.cse.medipal.controller.*;
 import lk.ac.mrt.cse.medipal.model.*;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -19,6 +20,8 @@ import java.util.ArrayList;
  */
 @Path("/prescription")
 public class PrescriptionResource {
+    public static Logger LOGGER = org.apache.log4j.Logger.getLogger(PrescriptionResource.class);
+
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @GET
@@ -71,7 +74,7 @@ public class PrescriptionResource {
         for(int i=0; i<drugsArray.length(); i++){
             PrescriptionDrug drug = new PrescriptionDrug();
             JSONObject drugObject = drugsArray.getJSONObject(i);
-            drug.setDrug(drugController.getDrugDetails(drugObject.get("dosage").toString()));
+            drug.setDrug(drugController.getDrugDetails(drugObject.get("drug_id").toString()));
             drug.setDosage(drugObject.get("dosage").toString());
             drug.setFrequency(drugObject.get("frequency").toString());
             drug.setRoute(drugObject.get("route").toString());
@@ -121,7 +124,7 @@ public class PrescriptionResource {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/patient/{id}/lastprescription/{disease}")
-    public Response getCurrentPrescriptionsForDisease(@PathParam("id") String patientID, @PathParam("disease") int diseaseID) {
+    public Response getLastPrescriptionsForDisease(@PathParam("id") String patientID, @PathParam("disease") int diseaseID) {
         Gson gson = new Gson();
         PrescriptionController prescriptionController = new PrescriptionController();
         JsonObject returnObject = new JsonObject();
@@ -140,5 +143,49 @@ public class PrescriptionResource {
 
     }
 
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    @Path("/checkprescription")
+    public Response checkPrescription(String request) {
+        JsonObject jsonObject = new JsonParser().parse(request).getAsJsonObject();
+        DrugController drugController = new DrugController();
+        Patient patient = new Patient();
+        ArrayList<PrescriptionDrug> prescriptionDrugsArray = new ArrayList<>();
+        Gson gson = new Gson();
+        int prescriptionID = 0;
+        Doctor doctor = new Doctor();
+        patient.setNic(jsonObject.get("nic").getAsString());
+        String disease_id = jsonObject.get("disease_id").getAsString();
+
+        JSONObject drugsArrayObject = new JSONObject(jsonObject.toString());
+        JSONArray drugsArray = drugsArrayObject.getJSONArray("prescription_drugs");
+
+        for(int i=0; i<drugsArray.length(); i++){
+            PrescriptionDrug drug = new PrescriptionDrug();
+            JSONObject drugObject = drugsArray.getJSONObject(i);
+            drug.setDrug(drugController.getDrugDetails(drugObject.get("drug_id").toString()));
+            prescriptionDrugsArray.add(drug);
+        }
+
+
+        Prescription prescription = new Prescription(prescriptionID,prescriptionDrugsArray,doctor,patient,disease_id,null, null);
+        PrescriptionController prescriptionController = new PrescriptionController();
+        JsonObject returnObject = new JsonObject();
+//
+        boolean addPrescription = prescriptionController.addPrescription(prescription);
+        returnObject.addProperty("success",addPrescription);
+        if(addPrescription){
+//            Prescription savedPrescription = prescriptionController.get(nic);
+//            String patientDetails = gson.toJson(savedPatient);
+//            JsonObject patientDetailObject = new JsonParser().parse(patientDetails).getAsJsonObject();
+//            returnObject.add("userData",patientDetailObject);
+            returnObject.addProperty("message","Successfully Saved prescription");
+        }
+        else {
+            returnObject.addProperty("message","Saving Failed");
+        }
+        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+    }
 
 }
