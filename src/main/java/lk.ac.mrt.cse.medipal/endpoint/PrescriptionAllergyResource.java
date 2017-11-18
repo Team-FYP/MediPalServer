@@ -5,9 +5,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lk.ac.mrt.cse.medipal.controller.DiseaseController;
+import lk.ac.mrt.cse.medipal.controller.DrugController;
 import lk.ac.mrt.cse.medipal.controller.PrescriptionAllergyController;
-import lk.ac.mrt.cse.medipal.model.Disease;
-import lk.ac.mrt.cse.medipal.model.PrescriptionAllergy;
+import lk.ac.mrt.cse.medipal.controller.PrescriptionController;
+import lk.ac.mrt.cse.medipal.model.*;
 import org.apache.log4j.Logger;
 
 import javax.ws.rs.*;
@@ -30,6 +31,27 @@ public class PrescriptionAllergyResource {
         JsonArray prescriptionAllergies = gson.toJsonTree(prescriptionAllergiesArray).getAsJsonArray();
         returnObject.add("prescriptionAllergyDetails", prescriptionAllergies);
 
+        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+    }
+
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    @Path("/addallergy")
+    public Response addPrescriptionAllergy(String request) {
+        JsonObject jsonObject = new JsonParser().parse(request).getAsJsonObject();
+        Gson gson = new Gson();
+        PrescriptionAllergy prescriptionAllergy = gson.fromJson(jsonObject.toString(), PrescriptionAllergy.class);
+        PrescriptionAllergyController prescriptionAllergyController = new PrescriptionAllergyController();
+        JsonObject returnObject = new JsonObject();
+        boolean addPrescriptionAllergy = prescriptionAllergyController.addPrescriptionAllergy(prescriptionAllergy);
+        returnObject.addProperty("success",addPrescriptionAllergy);
+        if(addPrescriptionAllergy){
+            returnObject.addProperty("message","Successfully Saved Allergy for Prescription");
+        }
+        else {
+            returnObject.addProperty("message","Saving Failed");
+        }
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
 }
