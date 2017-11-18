@@ -224,4 +224,30 @@ public class PatientController {
         }
         return status;
     }
+
+    public boolean checkForHistorySharedDoctor(String patient_id, String doctor_id){
+        boolean status = false;
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL1 = "SELECT 1 FROM patient_has_doctor WHERE PATIENT_NIC=? AND DOCTOR_REGISTRATION_NO = ?";
+            preparedStatement = connection.prepareStatement(SQL1);
+            preparedStatement.setString(1, patient_id);
+            preparedStatement.setString(2, doctor_id);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                status = true;
+            }
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error checking patient has shared history with doctor patient ", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return status;
+    }
 }

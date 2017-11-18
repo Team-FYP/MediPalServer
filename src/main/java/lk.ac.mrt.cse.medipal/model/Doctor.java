@@ -13,6 +13,16 @@ public class Doctor {
     private String mobile;
     private String password;
     private String image;
+    private boolean history_shared;
+
+
+    public boolean isHistory_shared() {
+        return history_shared;
+    }
+
+    public void setHistory_shared(boolean history_shared) {
+        this.history_shared = history_shared;
+    }
 
     public Doctor(String registration_id, String speciality, String name, String gender, String email, String mobile, String password, String image) {
         this.registration_id = registration_id;

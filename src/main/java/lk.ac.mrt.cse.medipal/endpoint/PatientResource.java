@@ -4,21 +4,17 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lk.ac.mrt.cse.medipal.controller.DoctorController;
 import lk.ac.mrt.cse.medipal.controller.PatientController;
+import lk.ac.mrt.cse.medipal.model.Doctor;
 import lk.ac.mrt.cse.medipal.model.Patient;
 import org.apache.log4j.Logger;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.beans.PropertyVetoException;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by lakshan on 9/19/17.
@@ -148,6 +144,29 @@ public class PatientResource {
         else {
             returnObject.addProperty("message","Updating Failed");
         }
+        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+    }
+
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/{id}/alldoctors")
+    public Response allDoctors(@PathParam("id") String patient_id) {
+        Gson gson = new Gson();
+        DoctorController doctorController = new DoctorController();
+        PatientController patientController = new PatientController();
+        JsonObject returnObject = new JsonObject();
+        ArrayList<Doctor> doctorsList = doctorController.getAllDoctors();
+        for (Doctor doctor: doctorsList
+             ) {
+            boolean prescribedBefore = patientController.checkForHistorySharedDoctor(patient_id, doctor.getRegistration_id());
+            if(prescribedBefore){
+                doctor.setHistory_shared(prescribedBefore);
+            }
+        }
+        JsonArray doctorsArray = gson.toJsonTree(doctorsList).getAsJsonArray();
+        returnObject.add("itemsList",doctorsArray);
+
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
 
