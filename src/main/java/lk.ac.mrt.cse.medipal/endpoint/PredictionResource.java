@@ -5,11 +5,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.microsoft.z3.Z3Exception;
 import lk.ac.mrt.cse.medipal.controller.*;
+import lk.ac.mrt.cse.medipal.model.Drug;
 import org.json.JSONArray;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 @Path("/prediction")
@@ -23,11 +25,17 @@ public class PredictionResource {
         Gson gson = new Gson();
         JsonObject returnObject = new JsonObject();
         PredictionController predictionController = new PredictionController();
+        DrugController drugController = new DrugController();
         String[] levelUpDrugs = predictionController.getLevelUpDrugs(patientID, disease);
-        JsonArray drugList = gson.toJsonTree(Arrays.asList(levelUpDrugs)).getAsJsonArray();
-        returnObject.add("drugList", drugList);
-        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
+        ArrayList<Drug> drugArrayList = new ArrayList<>();
 
+        for (int i=1; i<levelUpDrugs.length; i++){
+            drugArrayList.add(drugController.getDrugDetailsByName(levelUpDrugs[i]));
+        }
+
+        JsonArray drugsArray = gson.toJsonTree(drugArrayList).getAsJsonArray();
+        returnObject.add("itemsList",drugsArray);
+        return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
@@ -38,9 +46,15 @@ public class PredictionResource {
         Gson gson = new Gson();
         JsonObject returnObject = new JsonObject();
         PredictionController predictionController = new PredictionController();
-        String[] levelUpDrugs = predictionController.getLevelDownDrugs(patientID, disease);
-        JsonArray drugList = gson.toJsonTree(Arrays.asList(levelUpDrugs)).getAsJsonArray();
-        returnObject.add("drugList", drugList);
+        DrugController drugController = new DrugController();
+        ArrayList<Drug> drugArrayList = new ArrayList<>();
+        String[] levelDownDrugs = predictionController.getLevelDownDrugs(patientID, disease);
+        for (int i=1; i<levelDownDrugs.length; i++){
+            drugArrayList.add(drugController.getDrugDetailsByName(levelDownDrugs[i]));
+        }
+
+        JsonArray drugsArray = gson.toJsonTree(drugArrayList).getAsJsonArray();
+        returnObject.add("itemsList",drugsArray);
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
 
     }

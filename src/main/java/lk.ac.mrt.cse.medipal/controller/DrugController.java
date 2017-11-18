@@ -344,4 +344,32 @@ public class DrugController {
 
         return scoreValue;
     }
+
+    public Drug getDrugDetailsByName(String drug_name){
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "SELECT * FROM  `drug` WHERE `drug_name` = ?";
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setString(1, drug_name);
+            resultSet = preparedStatement.executeQuery();
+            Drug drug = new Drug();
+            if (resultSet.next()){
+                drug.setDrug_id(String.valueOf(resultSet.getInt("drug_id")));
+                drug.setDrug_name(resultSet.getString("drug_name"));
+                drug.setCategory_id(resultSet.getString("category_id"));
+                return drug;
+            }
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting drug details by drug name", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return null;
+    }
 }
