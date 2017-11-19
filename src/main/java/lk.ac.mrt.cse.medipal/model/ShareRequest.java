@@ -3,9 +3,10 @@ package lk.ac.mrt.cse.medipal.model;
 public class ShareRequest {
     private String doctor_id;
     private String patient_id;
-    private boolean status;
+    private String status;
+    private String message;
 
-    public ShareRequest(String doctor_id, String patient_id, boolean status) {
+    public ShareRequest(String doctor_id, String patient_id, String status) {
         this.doctor_id = doctor_id;
         this.patient_id = patient_id;
         this.status = status;
@@ -29,11 +30,19 @@ public class ShareRequest {
         this.patient_id = patient_id;
     }
 
-    public boolean getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(boolean status) {
+    public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

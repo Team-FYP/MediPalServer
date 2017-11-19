@@ -28,4 +28,12 @@ public class MessageUtil {
         return message;
 
     }
+
+    public static String AllergyAddedMessageBuild(String patient_name){
+        String message_part_one = " Mr.";
+        String message_part_two = " reported an allergy condition for a prescription";
+        String message = message_part_one + patient_name + message_part_two;
+        return message;
+
+    }
 }

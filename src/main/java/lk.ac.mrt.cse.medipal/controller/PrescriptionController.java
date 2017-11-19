@@ -18,10 +18,10 @@ public class PrescriptionController {
     public static Logger LOGGER = org.apache.log4j.Logger.getLogger(PrescriptionController.class);
     private static Connection connection;
 
-    public boolean savePrescription(Prescription prescription){
-        boolean status = false;
-        return status;
-    }
+//    public boolean savePrescription(Prescription prescription){
+//        boolean status = false;
+//        return status;
+//    }
 
 
     public ArrayList<Prescription> getPrescriptionsByPatient(String patientID){
@@ -284,6 +284,7 @@ public class PrescriptionController {
         boolean status=false;
         DoctorController doctorController = new DoctorController();
         String doctor_name = doctorController.getDoctorNameByID(prescription.getDoctor_id());
+        java.sql.Date today = new java.sql.Date(Calendar.getInstance().getTime().getTime());
         try {
 
             connection = DB_Connection.getDBConnection().getConnection();
@@ -295,7 +296,6 @@ public class PrescriptionController {
             preparedStatement.setString(2, prescription.getDoctor_id());
             preparedStatement.setInt(3, prescription.getPrescription_id());
             preparedStatement.setString(4, MessageUtil.PrescriptionAddedMessageBuild(doctor_name));
-
             status = 0 < preparedStatement.executeUpdate();
         } catch (SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error adding prescription notification", ex);
@@ -333,5 +333,58 @@ public class PrescriptionController {
             }
         }
         return prescription_id;
+    }
+
+    public Prescription getPrescriptionByID(int prescription_id){
+        PreparedStatement preparedStatementPrescription;
+        ResultSet resultSetPrescription;
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            ArrayList<PrescriptionDrug> lastPrescriptionDrugArray = new ArrayList<>();
+            Prescription prescription = new Prescription();
+
+            prescription.setPrescription_id(prescription_id);
+
+            String SQL = "SELECT drug.drug_name, drug.category_id,drug_prescription.Drug_ID, drug_prescription.Prescription_ID, drug_prescription.Dosage, drug_prescription.Frequency," +
+                    "drug_route.route_name, drug_prescription.Duration, drug_prescription.Use_Time, drug_prescription.Unit_Size, drug_prescription.Start_Date, prescription.DATE, prescription.DISEASE_DISEASE_ID, prescription.DOCTOR_ID " +
+                    "FROM drug INNER JOIN drug_prescription ON drug.drug_id=drug_prescription.Drug_ID INNER JOIN prescription ON drug_prescription.Prescription_ID=prescription.PRESCRIPTION_ID INNER JOIN drug_route ON drug_route.route_id=drug_prescription.Route " +
+                    "AND prescription.PRESCRIPTION_ID=?";
+
+            preparedStatementPrescription = connection.prepareStatement(SQL);
+            preparedStatementPrescription.setInt(1, prescription_id);
+            resultSetPrescription = preparedStatementPrescription.executeQuery();
+
+            while(resultSetPrescription.next()){
+                Drug drug = new Drug();
+                PrescriptionDrug lastPrescriptionDrug = new PrescriptionDrug();
+                drug.setDrug_id(resultSetPrescription.getString("Drug_ID"));
+                drug.setDrug_name(resultSetPrescription.getString("drug_name"));
+                drug.setCategory_id(resultSetPrescription.getString("category_id"));
+                lastPrescriptionDrug.setDrug(drug);
+                lastPrescriptionDrug.setPrescriptionID(resultSetPrescription.getInt("Prescription_ID"));
+                lastPrescriptionDrug.setDosage(resultSetPrescription.getString("Dosage"));
+                lastPrescriptionDrug.setFrequency(resultSetPrescription.getString("Frequency"));
+                lastPrescriptionDrug.setRoute(resultSetPrescription.getString("route_name"));
+                lastPrescriptionDrug.setDuration(resultSetPrescription.getInt("Duration"));
+                lastPrescriptionDrug.setUseTime(resultSetPrescription.getString("Use_Time"));
+                lastPrescriptionDrug.setUnitSize(resultSetPrescription.getString("Unit_Size"));
+                String startDate=resultSetPrescription.getDate("Start_Date").toString();
+                lastPrescriptionDrug.setStartDate(startDate);
+                lastPrescriptionDrugArray.add(lastPrescriptionDrug);
+            }
+            prescription.setPrescription_drugs(lastPrescriptionDrugArray);
+            return prescription;
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting prescription for by prescriptionID", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return null;
     }
 }

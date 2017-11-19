@@ -5,6 +5,15 @@ public class PrescriptionAllergy {
     private String patient_id;
     private String severity;
     private String allergy_description;
+    private int prescription_allergy_id;
+
+    public int getPrescription_allergy_id() {
+        return prescription_allergy_id;
+    }
+
+    public void setPrescription_allergy_id(int prescription_allergy_id) {
+        this.prescription_allergy_id = prescription_allergy_id;
+    }
 
     public Prescription getPrescription() {
         return prescription;

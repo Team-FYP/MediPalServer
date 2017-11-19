@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import lk.ac.mrt.cse.medipal.controller.DiseaseController;
-import lk.ac.mrt.cse.medipal.controller.DrugController;
-import lk.ac.mrt.cse.medipal.controller.PrescriptionAllergyController;
-import lk.ac.mrt.cse.medipal.controller.PrescriptionController;
+import lk.ac.mrt.cse.medipal.controller.*;
 import lk.ac.mrt.cse.medipal.model.*;
 import org.apache.log4j.Logger;
 
@@ -43,11 +40,17 @@ public class PrescriptionAllergyResource {
         Gson gson = new Gson();
         PrescriptionAllergy prescriptionAllergy = gson.fromJson(jsonObject.toString(), PrescriptionAllergy.class);
         PrescriptionAllergyController prescriptionAllergyController = new PrescriptionAllergyController();
+        AllergyNotificationController allergyNotificationController = new AllergyNotificationController();
         JsonObject returnObject = new JsonObject();
         boolean addPrescriptionAllergy = prescriptionAllergyController.addPrescriptionAllergy(prescriptionAllergy);
         returnObject.addProperty("success",addPrescriptionAllergy);
+        int prescriptionAllergyID = prescriptionAllergyController.getLastInsertedPrescriptionAllergyID();
+        prescriptionAllergy.setPrescription_allergy_id(prescriptionAllergyID);
         if(addPrescriptionAllergy){
-            returnObject.addProperty("message","Successfully Saved Allergy for Prescription");
+            boolean addAllergyNotification = allergyNotificationController.addPrescriptionAllergyNotification(prescriptionAllergy);
+            if(addAllergyNotification){
+                returnObject.addProperty("message","Successfully Saved Allergy for Prescription");
+            }
         }
         else {
             returnObject.addProperty("message","Saving Failed");
