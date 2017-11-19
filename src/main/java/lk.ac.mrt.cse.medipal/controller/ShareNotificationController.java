@@ -56,6 +56,7 @@ public class ShareNotificationController {
     }
 
     public ArrayList<ShareNotification> getAllSharedNotifications(String doctor_id){
+        PreparedStatement preparedStatement1;
         try {
             DoctorController doctorController = new DoctorController();
             PatientController patientController = new PatientController();
@@ -74,6 +75,15 @@ public class ShareNotificationController {
                 shareNotification.setTime(String.valueOf(resultSet.getTimestamp("time")));
                 shareNotificationArrayList.add(shareNotification);
             }
+
+            preparedStatement.close();
+
+            String SQL1 = "UPDATE share_notification SET status = ? WHERE status = ?";
+            preparedStatement1 = connection.prepareStatement(SQL1);
+            preparedStatement1.setString(1, "SENT");
+            preparedStatement1.setString(2, "NEW");
+            preparedStatement1.executeUpdate();
+
             return shareNotificationArrayList;
 
         } catch (SQLException | IOException | PropertyVetoException ex) {
@@ -88,6 +98,29 @@ public class ShareNotificationController {
             }
         }
         return null;
+    }
+
+    public boolean updateSharedNotificationsStatus(int notification_id){
+        boolean status = false;
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "UPDATE  `share_notification` SET status = ? WHERE share_notification_id=?";
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setString(1, "SEEN");
+            preparedStatement.setInt(2, notification_id);
+            status = 0 <preparedStatement.executeUpdate();
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error updating history shared notifications to SEEN", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return status;
     }
 
 

@@ -27,6 +27,7 @@ public class AllergyNotificationController {
     public ArrayList<AllergyNotification> getAllPrescriptionNotifications(String doctor_id){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
+            PreparedStatement preparedStatement1;
             String SQL = "SELECT * FROM  `allergy_notification` WHERE doctor_id=? ORDER BY id DESC";
             preparedStatement = connection.prepareStatement(SQL);
             preparedStatement.setString(1, doctor_id);
@@ -47,6 +48,15 @@ public class AllergyNotificationController {
                 allergyNotification.setPrescriptionAllergy(prescriptionAllergyController.getPrescriptionAllergyByID(resultSet.getInt("prescription_allergy_id")));
                 allergyNotificationArrayList.add(allergyNotification);
             }
+
+            preparedStatement.close();
+
+            String SQL1 = "UPDATE allergy_notification SET status = ? WHERE status = ?";
+            preparedStatement1 = connection.prepareStatement(SQL1);
+            preparedStatement1.setString(1, "SENT");
+            preparedStatement1.setString(2, "NEW");
+            preparedStatement1.executeUpdate();
+
             return allergyNotificationArrayList;
 
         } catch (SQLException | IOException | PropertyVetoException ex) {
@@ -84,6 +94,29 @@ public class AllergyNotificationController {
             status = 0 < preparedStatement.executeUpdate();
         } catch (SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error adding prescription notification", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return status;
+    }
+
+    public boolean updateAllergyNotificationsStatus(int notification_id){
+        boolean status = false;
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "UPDATE  `allergy_notification` SET status = ? WHERE id=?";
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setString(1, "SEEN");
+            preparedStatement.setInt(2, notification_id);
+            status = 0 <preparedStatement.executeUpdate();
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error updating allergy notifications to SEEN", ex);
         } finally {
             try {
                 DbUtils.closeQuietly(resultSet);

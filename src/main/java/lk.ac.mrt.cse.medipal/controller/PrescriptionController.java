@@ -342,6 +342,7 @@ public class PrescriptionController {
             connection = DB_Connection.getDBConnection().getConnection();
             ArrayList<PrescriptionDrug> lastPrescriptionDrugArray = new ArrayList<>();
             Prescription prescription = new Prescription();
+            DiseaseController diseaseController = new DiseaseController();
 
             prescription.setPrescription_id(prescription_id);
 
@@ -371,6 +372,7 @@ public class PrescriptionController {
                 String startDate=resultSetPrescription.getDate("Start_Date").toString();
                 lastPrescriptionDrug.setStartDate(startDate);
                 lastPrescriptionDrugArray.add(lastPrescriptionDrug);
+                prescription.setDisease_id(diseaseController.getDiseaseDetails(resultSetPrescription.getInt("DISEASE_DISEASE_ID")).getDisease_name());
             }
             prescription.setPrescription_drugs(lastPrescriptionDrugArray);
             return prescription;

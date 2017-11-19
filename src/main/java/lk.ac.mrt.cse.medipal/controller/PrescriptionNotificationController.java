@@ -23,6 +23,7 @@ public class PrescriptionNotificationController {
     public ArrayList<PrescriptionNotification> getAllPrescriptionNotifications(String patient_id){
         try {
             connection = DB_Connection.getDBConnection().getConnection();
+            PreparedStatement preparedStatement1;
             String SQL = "SELECT * FROM  `prescription_notification` WHERE patient_id=? ORDER BY id DESC";
             preparedStatement = connection.prepareStatement(SQL);
             preparedStatement.setString(1, patient_id);
@@ -41,6 +42,14 @@ public class PrescriptionNotificationController {
                 prescriptionNotification.setPrescription(prescriptionController.getPrescriptionByID(resultSet.getInt("prescription_id")));
                 prescriptionNotificationArrayList.add(prescriptionNotification);
             }
+
+            preparedStatement.close();
+
+            String SQL1 = "UPDATE prescription_notification SET status = ? WHERE status = ?";
+            preparedStatement1 = connection.prepareStatement(SQL1);
+            preparedStatement1.setString(1, "SENT");
+            preparedStatement1.setString(2, "NEW");
+            preparedStatement1.executeUpdate();
             return prescriptionNotificationArrayList;
 
         } catch (SQLException | IOException | PropertyVetoException ex) {
@@ -55,5 +64,28 @@ public class PrescriptionNotificationController {
             }
         }
         return null;
+    }
+
+    public boolean updatePrescriptionNotificationsStatus(int notification_id){
+        boolean status = false;
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "UPDATE  `prescription_notification` SET status = ? WHERE id=?";
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setString(1, "SEEN");
+            preparedStatement.setInt(2, notification_id);
+            status = 0 <preparedStatement.executeUpdate();
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error updating prescription notifications to SEEN", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return status;
     }
 }
