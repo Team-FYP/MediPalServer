@@ -3,6 +3,7 @@ package lk.ac.mrt.cse.medipal.controller;
 import lk.ac.mrt.cse.medipal.Database.DB_Connection;
 import lk.ac.mrt.cse.medipal.constants.Constants;
 import lk.ac.mrt.cse.medipal.model.Patient;
+import lk.ac.mrt.cse.medipal.model.Prescription;
 import lk.ac.mrt.cse.medipal.model.PrescriptionAllergy;
 import lk.ac.mrt.cse.medipal.util.Encryptor;
 import lk.ac.mrt.cse.medipal.util.ImageUtil;
@@ -80,5 +81,34 @@ public class PrescriptionAllergyController {
             }
         }
         return status;
+    }
+
+    public Prescription checkForPrescriptionAllergy(Prescription prescription){
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL1 = "SELECT * FROM prescription_has_allergy WHERE PRESCRIPTION_PRESCRIPTION_ID=?";
+            PrescriptionAllergy prescriptionAllergy =new PrescriptionAllergy();
+            preparedStatement = connection.prepareStatement(SQL1);
+            preparedStatement.setInt(1, prescription.getPrescription_id());
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                prescriptionAllergy.setPatient_id(resultSet.getString("PRESCRIPTION_PATIENT_NIC"));
+                prescriptionAllergy.setPrescription(prescription);
+                prescriptionAllergy.setSeverity(resultSet.getString("SEVERITY_NAME"));
+                prescriptionAllergy.setAllergy_description(resultSet.getString("ALLERGY_DESCRIPTION"));
+            }
+            prescription.setPrescriptionAllergy(prescriptionAllergy);
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error checking patient has shared history with doctor patient ", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return prescription;
     }
 }

@@ -1,10 +1,7 @@
 package lk.ac.mrt.cse.medipal.controller;
 
 import lk.ac.mrt.cse.medipal.Database.DB_Connection;
-import lk.ac.mrt.cse.medipal.model.Drug;
-import lk.ac.mrt.cse.medipal.model.Prescription;
-import lk.ac.mrt.cse.medipal.model.PrescriptionDrug;
-import lk.ac.mrt.cse.medipal.model.ShareRequest;
+import lk.ac.mrt.cse.medipal.model.*;
 import lk.ac.mrt.cse.medipal.util.MessageUtil;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.log4j.Logger;
@@ -35,6 +32,7 @@ public class PrescriptionController {
             preparedStatement.setString(1, patientID);
             resultSet = preparedStatement.executeQuery();
             ArrayList<Prescription> prescriptionList = new ArrayList<Prescription>();
+            PrescriptionAllergyController prescriptionAllergy = new PrescriptionAllergyController();
             while (resultSet.next()){
                 Prescription prescription = new Prescription();
                 prescription.setPrescription_id(resultSet.getInt("PRESCRIPTION_ID"));
@@ -44,6 +42,7 @@ public class PrescriptionController {
                 prescription.setDoctor_id(resultSet.getString("DOCTOR_ID"));
                 prescriptionList.add(prescription);
             }
+
             return prescriptionList;
         } catch (SQLException | IOException | PropertyVetoException ex) {
             LOGGER.error("Error getting prescription list by patient id", ex);

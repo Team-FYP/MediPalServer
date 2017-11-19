@@ -11,6 +11,16 @@ public class Prescription {
     private String disease_id;
     private String doctor_id;
     private String prescription_date;
+    private PrescriptionAllergy prescriptionAllergy;
+
+
+    public PrescriptionAllergy getPrescriptionAllergy() {
+        return prescriptionAllergy;
+    }
+
+    public void setPrescriptionAllergy(PrescriptionAllergy prescriptionAllergy) {
+        this.prescriptionAllergy = prescriptionAllergy;
+    }
 
     public String getDoctor_id() {
         return doctor_id;

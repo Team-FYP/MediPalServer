@@ -22,7 +22,7 @@ public class MessageUtil {
     }
 
     public static String PrescriptionAddedMessageBuild(String doctor_name){
-        String message_part_one = " Doctor  ";
+        String message_part_one = " Dr.";
         String message_part_two = " added a prescription for you";
         String message = message_part_one + doctor_name + message_part_two;
         return message;

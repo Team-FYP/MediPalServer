@@ -26,8 +26,11 @@ public class PrescriptionAllergy {
 
     }
 
-    public PrescriptionAllergy(String patient_id, Prescription prescription, String severity, String allergy_description) {
+    public void setPrescription(Prescription prescription) {
         this.prescription = prescription;
+    }
+
+    public PrescriptionAllergy(String patient_id, Prescription prescription, String severity, String allergy_description) {
         this.prescription = prescription;
         this.patient_id = patient_id;
         this.severity = severity;

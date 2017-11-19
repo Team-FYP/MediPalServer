@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lk.ac.mrt.cse.medipal.controller.DoctorController;
 import lk.ac.mrt.cse.medipal.controller.PatientController;
-import lk.ac.mrt.cse.medipal.controller.ShareRequestController;
 import lk.ac.mrt.cse.medipal.model.Doctor;
 import lk.ac.mrt.cse.medipal.model.Patient;
 import org.apache.log4j.Logger;
