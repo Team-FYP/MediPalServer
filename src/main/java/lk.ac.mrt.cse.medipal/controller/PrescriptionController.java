@@ -4,6 +4,8 @@ import lk.ac.mrt.cse.medipal.Database.DB_Connection;
 import lk.ac.mrt.cse.medipal.model.Drug;
 import lk.ac.mrt.cse.medipal.model.Prescription;
 import lk.ac.mrt.cse.medipal.model.PrescriptionDrug;
+import lk.ac.mrt.cse.medipal.model.ShareRequest;
+import lk.ac.mrt.cse.medipal.util.MessageUtil;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.log4j.Logger;
 
@@ -277,5 +279,60 @@ public class PrescriptionController {
             }
         }
         return null;
+    }
+
+    public boolean addPrescriptionNotification(Prescription prescription){
+        boolean status=false;
+        DoctorController doctorController = new DoctorController();
+        String doctor_name = doctorController.getDoctorNameByID(prescription.getDoctor_id());
+        try {
+
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL1 = "INSERT INTO `prescription_notification` " +
+                    " (`patient_id`,`doctor_id`, `prescription_id`, `message`) " +
+                    "VALUES (?, ?, ?, ?)";
+            preparedStatement = connection.prepareStatement(SQL1);
+            preparedStatement.setString(1, prescription.getPatient().getNic());
+            preparedStatement.setString(2, prescription.getDoctor_id());
+            preparedStatement.setInt(3, prescription.getPrescription_id());
+            preparedStatement.setString(4, MessageUtil.PrescriptionAddedMessageBuild(doctor_name));
+
+            status = 0 < preparedStatement.executeUpdate();
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error adding prescription notification", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return status;
+    }
+
+    public int getLastInsertedPrescriptionID(){
+        int prescription_id = 0;
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL1 = "SELECT PRESCRIPTION_ID FROM `prescription` ORDER BY PRESCRIPTION_ID DESC LIMIT 1";
+            preparedStatement = connection.prepareStatement(SQL1);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                prescription_id = resultSet.getInt("PRESCRIPTION_ID");
+            }
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting last prescription id", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return prescription_id;
     }
 }

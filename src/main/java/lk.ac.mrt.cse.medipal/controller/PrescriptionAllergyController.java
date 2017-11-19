@@ -59,14 +59,13 @@ public class PrescriptionAllergyController {
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String SQL1 = "INSERT INTO `prescription_has_allergy` " +
-                    " (`PRESCRIPTION_PRESCRIPTION_ID`,`PRESCRIPTION_PATIENT_NIC`,`ALLERGY_ALLERGY_ID`,`SEVERITY_NAME`,`ALLERGY_DESCRIPTION`) " +
-                    "VALUES (?, ?, ?, ?, ?)";
+                    " (`PRESCRIPTION_PRESCRIPTION_ID`,`PRESCRIPTION_PATIENT_NIC`,`SEVERITY_NAME`,`ALLERGY_DESCRIPTION`) " +
+                    "VALUES (?, ?, ?, ?)";
             preparedStatement = connection.prepareStatement(SQL1);
             preparedStatement.setInt(1, prescriptionAllergy.getPrescription().getPrescription_id());
             preparedStatement.setString(2, prescriptionAllergy.getPatient_id());
-            preparedStatement.setInt(3, prescriptionAllergy.getAllergy().getAllergy_id());
-            preparedStatement.setString(4, prescriptionAllergy.getSeverity());
-            preparedStatement.setString(5, prescriptionAllergy.getAllergy_description());
+            preparedStatement.setString(3, prescriptionAllergy.getSeverity());
+            preparedStatement.setString(4, prescriptionAllergy.getAllergy_description());
 
             status = 0 < preparedStatement.executeUpdate();
         } catch (SQLException | IOException | PropertyVetoException ex) {

@@ -18,6 +18,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -249,5 +250,61 @@ public class PatientController {
             }
         }
         return status;
+    }
+
+    public String getPatientNameByID(String patient_id){
+        String patient_name = null;
+        try{
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "SELECT PATIENT_NAME from patient where NIC = ?";
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setString(1,patient_id);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                patient_name = resultSet.getString("PATIENT_NAME");
+            }
+
+        }catch(SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting patient name by ID", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+
+        return patient_name;
+
+    }
+
+    public String getPatientGenderByID(String patient_id){
+        String patient_name = null;
+        try{
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "SELECT GENDER from patient where NIC = ?";
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setString(1,patient_id);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                patient_name = resultSet.getString("GENDER");
+            }
+
+        }catch(SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting patient gender by patient ID", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+
+        return patient_name;
+
     }
 }
