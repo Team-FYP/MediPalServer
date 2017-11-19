@@ -244,4 +244,57 @@ public class DoctorController {
         }
         return status;
     }
+
+    public String getDoctorNameByID(String doctor_id){
+        String doctor_name = null;
+        try{
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "SELECT NAME from doctor where REGISTRATION_NO = ?";
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setString(1,doctor_id);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                doctor_name = resultSet.getString("NAME");
+            }
+
+        }catch(SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting doctor name by ID", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+
+        return doctor_name;
+
+    }
+
+    public boolean isADoctor(String user_id){
+        boolean doctor = false;
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL1 = "SELECT * FROM doctor WHERE REGISTRATION_NO=?";
+            preparedStatement = connection.prepareStatement(SQL1);
+            preparedStatement.setString(1, user_id);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                doctor = true;
+            }
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error checking is a  Doctor", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return doctor;
+    }
 }

@@ -169,5 +169,4 @@ public class PatientResource {
 
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
-
 }

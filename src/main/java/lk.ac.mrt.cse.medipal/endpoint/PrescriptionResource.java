@@ -67,9 +67,14 @@ public class PrescriptionResource {
         PrescriptionController prescriptionController = new PrescriptionController();
         JsonObject returnObject = new JsonObject();
         boolean addPrescription = prescriptionController.addPrescription(prescription);
+        prescriptionID = prescriptionController.getLastInsertedPrescriptionID();
+        prescription.setPrescription_id(prescriptionID);
         returnObject.addProperty("success",addPrescription);
         if(addPrescription){
-            returnObject.addProperty("message","Successfully Saved prescription");
+            boolean addPrescriptionNotification = prescriptionController.addPrescriptionNotification(prescription);
+            if(addPrescriptionNotification){
+                returnObject.addProperty("message","Successfully Saved prescription");
+            }
         }
         else {
             returnObject.addProperty("message","Saving Failed");
