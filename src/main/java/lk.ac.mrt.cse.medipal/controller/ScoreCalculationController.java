@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 
+
+
 public class ScoreCalculationController {
     public static Logger LOGGER = org.apache.log4j.Logger.getLogger(ScoreCalculationController.class);
 
@@ -28,6 +30,25 @@ public class ScoreCalculationController {
         return 0;
     }
 
+
+
+
+    /** Function to split parent matrix into child matrices **/
+
+    public void split(String[][] P, String[][] C, int iB, int jB)
+
+    {
+
+        for(int i1 = 0, i2 = iB; i1 < C.length; i1++, i2++)
+
+            for(int j1 = 0, j2 = jB; j1 < C.length; j1++, j2++)
+
+                C[i1][j1] = P[i2][j2];
+
+    }
+
+
+
     public int getBestPathId(String[][] pathList, String[][] patientHistory){
 
         int size = pathList[0].length;
@@ -37,13 +58,57 @@ public class ScoreCalculationController {
         Integer[] transpose = new Integer[size];
         int index;
 
+        ArrayList<String[][]> subMatrices_A = new ArrayList<>();
+        ArrayList<String[][]> subMatrices_B = new ArrayList<>();
+
+        String[][] A11 = new String[size/2][size/2];
+        subMatrices_A.add(A11);
+        String[][] A12 = new String[size/2][size/2];
+        subMatrices_A.add(A12);
+        String[][] A21 = new String[size/2][size/2];
+        subMatrices_A.add(A21);
+        String[][] A22 = new String[size/2][size/2];
+        subMatrices_A.add(A22);
+        String[][] B11 = new String[size/2][size/2];
+        subMatrices_B.add(B11);
+        String[][] B12 = new String[size/2][size/2];
+        subMatrices_B.add(B12);
+        String[][] B21 = new String[size/2][size/2];
+        subMatrices_B.add(B21);
+        String[][] B22 = new String[size/2][size/2];
+        subMatrices_B.add(B22);
+
+        //Splitting the matrix 1 into 4 halves
+        split(pathList, A11, 0 , 0);
+
+        split(pathList, A12, 0 , size/2);
+
+        split(pathList, A21, size/2, 0);
+
+        split(pathList, A22, size/2, size/2);
+
+
+        //Splitting matrix 2 into 4 halves
+        split(patientHistory, B11, 0 , 0);
+
+        split(patientHistory, B12, 0 , size/2);
+
+        split(patientHistory, B21, size/2, 0);
+
+        split(patientHistory, B22, size/2, size/2);
+
+
+
+
+
         int threadcount = 0;
         Thread[] thread = new Thread[size*size];
 
         try {
-            for(int i=0; i < size; i++) {
-                for(int j=0; j<size; j++ ) {
-                    thread[threadcount] = new Thread(new WorkerThread(i, j, pathList, patientHistory, scoreMatrix, finalScoreMatrix));
+            for(int i=0; i < size/2; i++) {
+
+                for(int j=0; j<size/2; j++ ) {
+                thread[threadcount] = new Thread(new WorkerThread(i, j, subMatrices_A.get(i), subMatrices_B.get(j), scoreMatrix, finalScoreMatrix));
                     thread[threadcount].start();
 
                     thread[threadcount].join();
@@ -57,6 +122,7 @@ public class ScoreCalculationController {
 
         }
 
+
         for(int i=0; i<size; i++){
             LOGGER.info(finalScoreMatrix[i][0]);
         }
@@ -64,6 +130,7 @@ public class ScoreCalculationController {
         for(int i=0; i<size; i++){
             transpose[i] = finalScoreMatrix[i][0];
         }
+
 
         index = Arrays.asList(transpose).indexOf(Collections.max(Arrays.asList(transpose)));
 
@@ -85,8 +152,9 @@ public class ScoreCalculationController {
 
         try {
             for(int i=0; i < size; i++) {
+
                 for(int j=0; j<size; j++ ) {
-                    thread[threadcount] = new Thread(new WorkerThread(i, j, pathList, patientHistory, scoreMatrix, finalScoreMatrix));
+                thread[threadcount] = new Thread(new WorkerThread(i, j, pathList, patientHistory, scoreMatrix, finalScoreMatrix));
                     thread[threadcount].start();
 
                     thread[threadcount].join();
