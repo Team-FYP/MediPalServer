@@ -18,14 +18,11 @@ public class PredictionController {
 
     private Object[] transformArrays(String[][] pathList, String[] patientHistory){
 
-        for(int i=0; i<pathList.length; i++){
-            LOGGER.info(pathList[i]);
-        }
         int maximum = Math.max(Math.max(pathList.length, pathList[0].length), patientHistory.length);
         String[][] pathListMatix = new String[maximum][maximum];
         String[][] patientHistoryMatrix = new String[maximum][maximum];
 
-        for(int i=0; i<maximum; i++){
+        for(int i=0; i<pathList.length; i++){
             pathListMatix[i] = Arrays.copyOf(pathList[i], maximum);
         }
 
@@ -52,43 +49,53 @@ public class PredictionController {
         DiseasePathController pathController = new DiseasePathController();
         PrescriptionController prescriptionController = new PrescriptionController();
         Prescription prescription = prescriptionController.getLastPrescriptionForDisease(patientID, diseaseController.getDiseaseId(disease));
-        ArrayList<PrescriptionDrug> prescriptionDrugs = prescription.getPrescription_drugs();
-        String[] prescribeDrugs = new String[prescriptionDrugs.size() + 1];
-        prescribeDrugs[0] = disease;
-        LOGGER.info("test");
-        for(PrescriptionDrug prescriptionDrug : prescriptionDrugs){
-            LOGGER.info(i);
-            prescribeDrugs[i] = prescriptionDrug.getDrug().getDrug_name();
-            LOGGER.info(prescribeDrugs[i]);
-            i++;
+        String[] prescribeDrugs;
+        if(prescription == null){
+            prescribeDrugs = new String[1];
+            prescribeDrugs[0] = disease;
+        }else {
+            ArrayList<PrescriptionDrug> prescriptionDrugs = prescription.getPrescription_drugs();
+            prescribeDrugs = new String[prescriptionDrugs.size() + 1];
+            prescribeDrugs[0] = disease;
+            for (PrescriptionDrug prescriptionDrug : prescriptionDrugs) {
+                LOGGER.info(i);
+                prescribeDrugs[i] = prescriptionDrug.getDrug().getDrug_name();
+                LOGGER.info(prescribeDrugs[i]);
+                i++;
+            }
         }
         for(int k=1; k<=3; k++){
             Prescription prescription1 = prescriptionController.getLastPrescriptionForDisease(patientID, k);
             if(prescription1 != null && k==1){
-                LOGGER.info("test for" + j);
                 patientHistory.add("Diabetes");
+                ArrayList<PrescriptionDrug> prescriptionDrugs1 = prescription1.getPrescription_drugs();
+                for(PrescriptionDrug prescriptionDrug : prescriptionDrugs1){
+                    patientHistory.add(prescriptionDrug.getDrug().getDrug_name());
+
+                }
             }else if(prescription1 != null && k==2){
                 patientHistory.add("Hypertension");
+                ArrayList<PrescriptionDrug> prescriptionDrugs1 = prescription1.getPrescription_drugs();
+                for(PrescriptionDrug prescriptionDrug : prescriptionDrugs1){
+                    patientHistory.add(prescriptionDrug.getDrug().getDrug_name());
+
+                }
             }else if(prescription1 != null && k==3){
+                LOGGER.info("inside COPD");
+                LOGGER.info("size"+prescription1.getPrescription_drugs().size());
                 patientHistory.add("COPD");
+                ArrayList<PrescriptionDrug> prescriptionDrugs1 = prescription1.getPrescription_drugs();
+                for(PrescriptionDrug prescriptionDrug : prescriptionDrugs1){
+                    patientHistory.add(prescriptionDrug.getDrug().getDrug_name());
+
+                }
             }
-            ArrayList<PrescriptionDrug> prescriptionDrugs1 = prescription1.getPrescription_drugs();
-            for(PrescriptionDrug prescriptionDrug : prescriptionDrugs1){
-                patientHistory.add(prescriptionDrug.getDrug().getDrug_name());
-            }
-        }
-        LOGGER.info("prescribe Drugs list");
-        for(int a=0; a<prescribeDrugs.length; a++){
-            LOGGER.info(prescribeDrugs[a]);
+
         }
 
         ArrayList<String> list = drugController.getCategoryListByDrugList(diseaseMap.get(disease), new ArrayList<String>(Arrays.asList(prescribeDrugs)));
         list.add(disease);
         String[] prescribeCategory = list.toArray(new String[list.size()]);
-        LOGGER.info("prescribe category list");
-        for(int a=0; a<prescribeCategory.length; a++){
-            LOGGER.info(prescribeCategory[a]);
-        }
 
         String[][] pathList = pathController.findDiseaseLevelUpPathList(disease, prescribeCategory);
 
@@ -115,17 +122,13 @@ public class PredictionController {
         ArrayList<PrescriptionDrug> prescriptionDrugs = prescription.getPrescription_drugs();
         String[] prescribeDrugs = new String[prescriptionDrugs.size() + 1];
         prescribeDrugs[0] = disease;
-        LOGGER.info("test");
         for(PrescriptionDrug prescriptionDrug : prescriptionDrugs){
-            LOGGER.info(i);
             prescribeDrugs[i] = prescriptionDrug.getDrug().getDrug_name();
-            LOGGER.info(prescribeDrugs[i]);
             i++;
         }
         for(int k=1; k<=3; k++){
             Prescription prescription1 = prescriptionController.getLastPrescriptionForDisease(patientID, k);
             if(prescription1 != null && k==1){
-                LOGGER.info("test for" + j);
                 patientHistory.add("Diabetes");
             }else if(prescription1 != null && k==2){
                 patientHistory.add("Hypertension");
@@ -141,10 +144,6 @@ public class PredictionController {
         ArrayList<String> list = drugController.getCategoryListByDrugList(diseaseMap.get(disease), new ArrayList<String>(Arrays.asList(prescribeDrugs)));
         list.add(disease);
         String[] prescribeCategory = list.toArray(new String[list.size()]);
-        LOGGER.info("prescribe category list");
-        for(int a=0; a<prescribeCategory.length; a++){
-            LOGGER.info(prescribeCategory[a]);
-        }
 
         String[][] pathList = pathController.findDiseaseLevelDownPathList(disease, prescribeCategory);
 
@@ -171,22 +170,31 @@ public class PredictionController {
             Prescription prescription1 = prescriptionController.getLastPrescriptionForDisease(patientID, k);
             if(prescription1 != null && k==1){
                 patientHistory.add("Diabetes");
+                ArrayList<PrescriptionDrug> prescriptionDrugs1 = prescription1.getPrescription_drugs();
+                for(PrescriptionDrug prescriptionDrug : prescriptionDrugs1){
+                    patientHistory.add(prescriptionDrug.getDrug().getDrug_name());
+                }
             }else if(prescription1 != null && k==2){
                 patientHistory.add("Hypertension");
+                ArrayList<PrescriptionDrug> prescriptionDrugs1 = prescription1.getPrescription_drugs();
+                for(PrescriptionDrug prescriptionDrug : prescriptionDrugs1){
+                    patientHistory.add(prescriptionDrug.getDrug().getDrug_name());
+                }
             }else if(prescription1 != null && k==3){
                 patientHistory.add("COPD");
+                ArrayList<PrescriptionDrug> prescriptionDrugs1 = prescription1.getPrescription_drugs();
+                for(PrescriptionDrug prescriptionDrug : prescriptionDrugs1){
+                    patientHistory.add(prescriptionDrug.getDrug().getDrug_name());
+                }
             }
-            ArrayList<PrescriptionDrug> prescriptionDrugs1 = prescription1.getPrescription_drugs();
-            for(PrescriptionDrug prescriptionDrug : prescriptionDrugs1){
-                patientHistory.add(prescriptionDrug.getDrug().getDrug_name());
-            }
+
 
         }
 
         for(String drug : prescribedDrugs){
-            patientHistory.add(drug);
+            if(!patientHistory.contains(drug))
+                patientHistory.add(drug);
         }
-
         String[][] pathList = pathController.findSuggestionPathList(disease, prescribedDrugs, changedDrug);
 
         Object[] arrays = transformArrays(pathList, patientHistory.toArray(new String[patientHistory.size()]));

@@ -1,3 +1,4 @@
+/*
 package lk.ac.mrt.cse.medipal.endpoint;
 
 
@@ -11,9 +12,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+*/
 /**
  * Prescription Resource endpoint
- */
+ *//*
+
 @Path("/scorecalculation")
 public class ScoreCalculationResource {
 
@@ -67,3 +70,4 @@ public class ScoreCalculationResource {
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
 }
+*/

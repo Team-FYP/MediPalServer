@@ -680,34 +680,28 @@ public class DiseasePathController {
             s.Assert(exp1);
             s.Assert(exp3);
             s.Assert(exp4);
-            nd4 = ctx.MkFalse();
         } else if (medi[7].IsTrue() && medi[3].IsTrue()) {
             s.Assert(exp1);
             s.Assert(exp2);
             s.Assert(exp4);
-            nd4 = ctx.MkFalse();
         } else if (medi[7].IsTrue()) {
             s.Assert(exp1);
             s.Assert(exp3);
             s.Assert(exp4);
-            nd4 = ctx.MkFalse();
         } else if (medi[4].IsTrue() || medi[5].IsTrue() || medi[6].IsTrue()) {
             s.Assert(exp3);
             s.Assert(exp4);
-            nd3 = ctx.MkFalse();
         } else if (medi[1].IsTrue() || medi[2].IsTrue()) {
             s.Assert(exp4);
-            nd1 = ctx.MkFalse();
         } else if (medi[3].IsTrue()) {
             s.Assert(exp4);
-            nd2 = ctx.MkFalse();
         }
 
-        s.Assert(expNd0R);
+       /* s.Assert(expNd0R);
         s.Assert(expNd1R);
         s.Assert(expNd2R);
         s.Assert(expNd3R);
-        s.Assert(expNd4R);
+        s.Assert(expNd4R);*/
 
         if (s.Check() == Status.SATISFIABLE) {
             Model m = s.Model();
@@ -716,6 +710,17 @@ public class DiseasePathController {
             int b = node2.length;
             int c = node3.length;
             int e;
+
+            if (medi[7].IsTrue() && (medi[1].IsTrue() || medi[2].IsTrue() || medi[4].IsTrue() || medi[5].IsTrue() || medi[6].IsTrue())) {
+                nd4 = ctx.MkFalse();
+            } else if (medi[7].IsTrue() && medi[3].IsTrue()) {
+                nd4 = ctx.MkFalse();
+            } else if (medi[7].IsTrue()) {
+                nd4 = ctx.MkFalse();
+            } else if (medi[4].IsTrue() || medi[5].IsTrue() || medi[6].IsTrue()) {
+                s.Assert(exp3);
+                nd3 = ctx.MkFalse();
+            }
 
             if (m.Evaluate(nd3, true).IsTrue()) {
                 pathList = new String[a*c][3];
@@ -729,20 +734,19 @@ public class DiseasePathController {
                         pathList[e][2] = node3[e%c];
                     }
                 }
-            } else if (m.Evaluate(nd2, true).IsTrue() && m.Evaluate(nd4, true).IsTrue()) {
-                pathList = new String[1][3];
+            } else if (m.Evaluate(nd2, true).IsTrue()) {
+                pathList = new String[1][2];
                 pathList[0][0] = DIABETES;
                 pathList[0][1] = ACARBOSE;
-                pathList[0][2] = INSULIN;
 
-            } else if (m.Evaluate(nd0, true).IsTrue()) {
-                pathList = new String[a+b][2];
-                for (int i=0; i<a; i++) {
+            } else if (m.Evaluate(nd1, true).IsTrue()) {
+                LOGGER.info("inside nd1 ...");
+                pathList = new String[a][2];
+                for(int i=0; i<a; i++) {
                     pathList[i][0] = DIABETES;
                     pathList[i][1] = node1[i];
                 }
-                pathList[a][0] = DIABETES;
-                pathList[a][1] = ACARBOSE;
+
             }
 
         }
@@ -824,22 +828,17 @@ public class DiseasePathController {
         if(medi[3].IsTrue() && medi[1].IsTrue()){
             s.Assert(exp1);
             s.Assert(exp3);
-            nd3 = ctx.MkFalse();
         }else if(medi[3].IsTrue() && medi[2].IsTrue()){
             s.Assert(exp2);
             s.Assert(exp3);
-            nd3 = ctx.MkFalse();
         }else if(medi[3].IsTrue()){
             s.Assert(exp1);
             s.Assert(exp2);
             s.Assert(exp3);
-            nd3 = ctx.MkFalse();
         }else if(medi[1].IsTrue()){
             s.Assert(exp3);
-            nd1 = ctx.MkFalse();
         }else if(medi[2].IsTrue()){
             s.Assert(exp3);
-            nd2 = ctx.MkFalse();
         }
 
         if (s.Check() == Status.SATISFIABLE) {
@@ -849,6 +848,14 @@ public class DiseasePathController {
             int b = node2.length;
             int c = node3.length;
             int e;
+
+            if(medi[3].IsTrue() && medi[1].IsTrue()){
+                nd3 = ctx.MkFalse();
+            }else if(medi[3].IsTrue() && medi[2].IsTrue()){
+                nd3 = ctx.MkFalse();
+            }else if(medi[3].IsTrue()){
+                nd3 = ctx.MkFalse();
+            }
 
             if(m.Evaluate(nd1, true).IsTrue() && m.Evaluate(nd2, true).IsTrue()){
                 pathList = new String[a+b][2];
@@ -881,8 +888,7 @@ public class DiseasePathController {
 
     private String[][] findHypertensionLevelDown(Context ctx, String[] prescribeDrugs) throws Z3Exception, TestFailedException {
 
-
-        ArrayList<String> seletedMeds = new ArrayList<>();
+        LOGGER.info("testing 1");
         String[][] pathList = null;
 
         BoolExpr [] medi = new BoolExpr[7];
@@ -929,7 +935,7 @@ public class DiseasePathController {
         BoolExpr exp4 = ctx.MkBoolConst("exp4");
         BoolExpr exp5 = ctx.MkBoolConst("exp5");
         BoolExpr exp6 = ctx.MkBoolConst("exp6");
-
+        LOGGER.info("testing 2");
         for(String med : prescribeDrugs){
             if(med.equalsIgnoreCase(HYPERTENSION)){
                 medi[0] = ctx.MkTrue();
@@ -975,36 +981,34 @@ public class DiseasePathController {
         s.Assert(expNd4);
 
         if((medi[5].IsTrue() || medi[6].IsTrue()) && medi[4].IsTrue()){
+            LOGGER.info("testing ...");
             s.Assert(exp1);
             s.Assert(exp3);
             s.Assert(exp4);
             s.Assert(exp5);
-            nd4 = ctx.MkFalse();
-        }else if((medi[5].IsTrue() || medi[6].IsTrue()) && medi[2].IsTrue()){
+        }else if((medi[5].IsTrue() || medi[6].IsTrue()) && medi[3].IsTrue()){
             s.Assert(exp2);
             s.Assert(exp4);
             s.Assert(exp5);
-            nd4 = ctx.MkFalse();
         }else if(medi[5].IsTrue() || medi[6].IsTrue()){
             s.Assert(exp1);
             s.Assert(exp2);
             s.Assert(exp3);
             s.Assert(exp4);
             s.Assert(exp5);
-            nd4 = ctx.MkFalse();
         }else if(medi[3].IsTrue() && medi[4].IsTrue()) {
+            LOGGER.info("in CCB and diuretic Drug ...");
             s.Assert(exp3);
             s.Assert(exp4);
             s.Assert(exp5);
-            nd3 = ctx.MkFalse();
         }else if(medi[4].IsTrue()){
+            LOGGER.info("in Diuretic Drug ...");
             s.Assert(exp4);
             s.Assert(exp5);
-            nd3 = ctx.MkFalse();
         }else if(medi[3].IsTrue()){
+            LOGGER.info("in CCB Drug ...");
             s.Assert(exp4);
             s.Assert(exp5);
-            nd2 = ctx.MkFalse();
         }
 
         if (s.Check() == Status.SATISFIABLE) {
@@ -1015,6 +1019,26 @@ public class DiseasePathController {
             int c = node3.length;
             int d = node4.length;
             int e;
+
+            if((medi[5].IsTrue() || medi[6].IsTrue()) && medi[4].IsTrue()){
+                nd4 = ctx.MkFalse();
+            }else if((medi[5].IsTrue() || medi[6].IsTrue()) && medi[3].IsTrue()){
+                nd4 = ctx.MkFalse();
+            }else if(medi[5].IsTrue() || medi[6].IsTrue()){
+                nd4 = ctx.MkFalse();
+            }else if(medi[3].IsTrue() && medi[4].IsTrue()) {
+                nd3 = ctx.MkFalse();
+            }else if(medi[4].IsTrue()){
+                nd3 = ctx.MkFalse();
+            }else if(medi[3].IsTrue()){
+                nd2 = ctx.MkFalse();
+            }
+
+            LOGGER.info("node0" + m.Evaluate(nd0, true).IsTrue());
+            LOGGER.info("node1" + m.Evaluate(nd1, true).IsTrue());
+            LOGGER.info("node2" + m.Evaluate(nd2, true).IsTrue());
+            LOGGER.info("node3" + m.Evaluate(nd3, true).IsTrue());
+            LOGGER.info("node4" + m.Evaluate(nd4, true).IsTrue());
 
             if(m.Evaluate(nd3, true).IsTrue() && m.Evaluate(nd2, true).IsTrue()){
                 pathList = new String[a*b*c][4];
@@ -1058,6 +1082,13 @@ public class DiseasePathController {
                         pathList[e][0] = HYPERTENSION;
                     }
                 }
+            }else if(m.Evaluate(nd1, true).IsTrue()){
+                pathList = new String[a][2];
+                for(int i=0; i<a; i++){
+                    pathList[i][1] = node1[i];
+                    pathList[i][0] = HYPERTENSION;
+
+                }
             }
         }
 
@@ -1088,14 +1119,23 @@ public class DiseasePathController {
 
         if(disease.equalsIgnoreCase(DIABETES)){
             ArrayList<String> list1 = drugController.getDrugListByCategoryList(1, new ArrayList<String>(Arrays.asList(METFORMIN, SULFONYLUREA)));
+            ArrayList<String> list2 = drugController.getDrugListByCategoryList(1, new ArrayList<String>(Arrays.asList(ACARBOSE)));
             ArrayList<String> list3 = drugController.getDrugListByCategoryList(1, new ArrayList<String>(Arrays.asList(SITAGLIPTIN, PIOGLITAZONE, EMPAGLIFLOZIN)));
+            ArrayList<String> list4 = drugController.getDrugListByCategoryList(1, new ArrayList<String>(Arrays.asList(INSULIN)));
 
             String[] node1 = list1.toArray(new String[list1.size()]);
+            String[] node2 = list2.toArray(new String[list2.size()]);
             String[] node3 = list3.toArray(new String[list3.size()]);
+            String[] node4 = list4.toArray(new String[list4.size()]);
+
             if(list1.contains(changedDrug)){
                 return buildArray(node1, index, prescribedDrugs, changedDrug);
             }else if(list3.contains(changedDrug)){
                 return buildArray(node3, index, prescribedDrugs, changedDrug);
+            }else if(list2.contains(changedDrug)) {
+                return buildArray(node2, index, prescribedDrugs, changedDrug);
+            }else if(list4.contains(changedDrug)) {
+                return buildArray(node4, index, prescribedDrugs, changedDrug);
             }
         }else if(disease.equalsIgnoreCase(COPD)){
 
@@ -1160,7 +1200,7 @@ public class DiseasePathController {
     }
 
     public String[][] findDiseaseLevelDownPathList(String disease, String[] prescribeDrugs) throws Z3Exception, TestFailedException {
-
+        LOGGER.info("inside level down");
         Context.ToggleWarningMessages(true);
         HashMap<String, String> cfg = new HashMap<String, String>();
         cfg.put("model", "true");
@@ -1171,6 +1211,7 @@ public class DiseasePathController {
         }else if(disease.equalsIgnoreCase(COPD)){
             return findCOPDLevelDown(ctx, prescribeDrugs);
         }else if(disease.equalsIgnoreCase(HYPERTENSION)){
+            LOGGER.info("inside hypertension");
             return findHypertensionLevelDown(ctx, prescribeDrugs);
         }
 
