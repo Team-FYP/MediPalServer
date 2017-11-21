@@ -6,6 +6,7 @@ public abstract class Notification {
     private String message;
     private String status;
     private String time;
+    private int notification_id;
 
     public Notification(Patient patient, Doctor doctor, String message, String status, String time) {
         this.patient = patient;
@@ -55,5 +56,13 @@ public abstract class Notification {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public int getNotification_id() {
+        return notification_id;
+    }
+
+    public void setNotification_id(int notification_id) {
+        this.notification_id = notification_id;
     }
 }

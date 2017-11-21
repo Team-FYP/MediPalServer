@@ -24,10 +24,10 @@ public class AllergyNotificationController {
     private static ResultSet resultSet;
     private static Connection connection;
 
-    public ArrayList<AllergyNotification> getAllPrescriptionNotifications(String doctor_id){
+    public ArrayList<AllergyNotification> getAllAllergyNotifications(String doctor_id){
+        PreparedStatement preparedStatement1 = null;
         try {
             connection = DB_Connection.getDBConnection().getConnection();
-            PreparedStatement preparedStatement1;
             String SQL = "SELECT * FROM  `allergy_notification` WHERE doctor_id=? ORDER BY id DESC";
             preparedStatement = connection.prepareStatement(SQL);
             preparedStatement.setString(1, doctor_id);
@@ -39,6 +39,7 @@ public class AllergyNotificationController {
             PrescriptionAllergyController prescriptionAllergyController = new PrescriptionAllergyController();
             while (resultSet.next()){
                 AllergyNotification allergyNotification = new AllergyNotification();
+                allergyNotification.setNotification_id(resultSet.getInt("id"));
                 allergyNotification.setPatient(patientController.getPatiaentDetails(resultSet.getString("patient_id")));
                 allergyNotification.setDoctor(doctorController.getDoctorDetails(resultSet.getString("doctor_id")));
                 allergyNotification.setStatus(resultSet.getString("status"));
@@ -50,7 +51,7 @@ public class AllergyNotificationController {
             }
 
             preparedStatement.close();
-
+//
             String SQL1 = "UPDATE allergy_notification SET status = ? WHERE status = ?";
             preparedStatement1 = connection.prepareStatement(SQL1);
             preparedStatement1.setString(1, "SENT");
@@ -64,7 +65,7 @@ public class AllergyNotificationController {
         } finally {
             try {
                 DbUtils.closeQuietly(resultSet);
-                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.closeQuietly(preparedStatement1);
                 DbUtils.close(connection);
             } catch (SQLException ex) {
                 LOGGER.error("Error closing sql connection", ex);

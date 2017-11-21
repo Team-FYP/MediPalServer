@@ -21,9 +21,9 @@ public class PrescriptionNotificationController {
     private static Connection connection;
 
     public ArrayList<PrescriptionNotification> getAllPrescriptionNotifications(String patient_id){
+        PreparedStatement preparedStatement1 = null;
         try {
             connection = DB_Connection.getDBConnection().getConnection();
-            PreparedStatement preparedStatement1;
             String SQL = "SELECT * FROM  `prescription_notification` WHERE patient_id=? ORDER BY id DESC";
             preparedStatement = connection.prepareStatement(SQL);
             preparedStatement.setString(1, patient_id);
@@ -34,6 +34,7 @@ public class PrescriptionNotificationController {
             PrescriptionController prescriptionController = new PrescriptionController();
             while (resultSet.next()){
                 PrescriptionNotification prescriptionNotification = new PrescriptionNotification();
+                prescriptionNotification.setNotification_id(resultSet.getInt("id"));
                 prescriptionNotification.setPatient(patientController.getPatiaentDetails(resultSet.getString("patient_id")));
                 prescriptionNotification.setDoctor(doctorController.getDoctorDetails(resultSet.getString("doctor_id")));
                 prescriptionNotification.setStatus(resultSet.getString("status"));
@@ -57,7 +58,7 @@ public class PrescriptionNotificationController {
         } finally {
             try {
                 DbUtils.closeQuietly(resultSet);
-                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.closeQuietly(preparedStatement1);
                 DbUtils.close(connection);
             } catch (SQLException ex) {
                 LOGGER.error("Error closing sql connection", ex);

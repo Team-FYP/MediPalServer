@@ -34,7 +34,9 @@ public class DB_Connection {
         ds.setUrl(DB_constants.DB_URL+DB_constants.DB_NAME);
         // the settings below are optional -- dbcp can work with defaults
         //        ds.setMinIdle(5);
-        //        ds.setMaxIdle(20);
+                ds.setMaxIdle(50);
+                ds.setMaxTotal(100);
+                ds.setMaxConnLifetimeMillis(10000);
         //        ds.setMaxOpenPreparedStatements(180);
 
     }

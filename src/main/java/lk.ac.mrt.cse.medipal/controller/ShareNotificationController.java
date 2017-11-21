@@ -56,7 +56,7 @@ public class ShareNotificationController {
     }
 
     public ArrayList<ShareNotification> getAllSharedNotifications(String doctor_id){
-        PreparedStatement preparedStatement1;
+        PreparedStatement preparedStatement1 = null;
         try {
             DoctorController doctorController = new DoctorController();
             PatientController patientController = new PatientController();
@@ -68,6 +68,7 @@ public class ShareNotificationController {
             ArrayList<ShareNotification> shareNotificationArrayList = new ArrayList<>();
             while (resultSet.next()){
                 ShareNotification shareNotification = new ShareNotification();
+                shareNotification.setNotification_id(resultSet.getInt("share_notification_id"));
                 shareNotification.setDoctor(doctorController.getDoctorDetails(resultSet.getString("doctor_id")));
                 shareNotification.setPatient(patientController.getPatiaentDetails(resultSet.getString("patient_id")));
                 shareNotification.setStatus(resultSet.getString("status"));
@@ -91,7 +92,7 @@ public class ShareNotificationController {
         } finally {
             try {
                 DbUtils.closeQuietly(resultSet);
-                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.closeQuietly(preparedStatement1);
                 DbUtils.close(connection);
             } catch (SQLException ex) {
                 LOGGER.error("Error closing sql connection", ex);

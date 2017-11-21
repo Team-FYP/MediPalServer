@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.microsoft.z3.Z3Exception;
 import lk.ac.mrt.cse.medipal.controller.*;
 import lk.ac.mrt.cse.medipal.model.*;
 import org.apache.log4j.Logger;
@@ -104,14 +105,32 @@ public class PrescriptionResource {
     public Response getLastPrescriptionsForDisease(@PathParam("id") String patientID, @PathParam("disease") int diseaseID) {
         Gson gson = new Gson();
         PrescriptionController prescriptionController = new PrescriptionController();
+        PredictionController predictionController = new PredictionController();
         JsonObject returnObject = new JsonObject();
+        Prescription prescription = new Prescription();
 
         int prescriptionID = prescriptionController.getLastPrescriptionIdByDisease(patientID, String.valueOf(diseaseID));
         if(prescriptionID<0){
-            returnObject.addProperty("itemsList",prescriptionID);
+            DrugController drugController = new DrugController();
+            DiseaseController diseaseController = new DiseaseController();
+            String diseaseName = diseaseController.getDiseaseName(diseaseID);
+            ArrayList<Drug> drugArrayList = new ArrayList<>();
+            try {
+                String[] firstPrescriptionDrugs= predictionController.getLevelUpDrugs(patientID, diseaseName);
+                for (int i=1; i<firstPrescriptionDrugs.length; i++){
+                    drugArrayList.add(drugController.getDrugDetailsByName(firstPrescriptionDrugs[i]));
+                }
+                prescription = prescriptionController.getPrescriptionByDrugsList(drugArrayList);
+                String firstPrescriptionsDetails = gson.toJson(prescription);
+                returnObject = new JsonParser().parse(firstPrescriptionsDetails).getAsJsonObject();
+            } catch (Z3Exception e) {
+                e.printStackTrace();
+            } catch (DiseasePathController.TestFailedException e) {
+                e.printStackTrace();
+            }
         }else {
-            Prescription lastPrescriptions = prescriptionController.getLastPrescriptionForDisease(patientID, diseaseID);
-            String lastPrescriptionsDetails = gson.toJson(lastPrescriptions);
+            prescription = prescriptionController.getLastPrescriptionForDisease(patientID, diseaseID);
+            String lastPrescriptionsDetails = gson.toJson(prescription);
             returnObject = new JsonParser().parse(lastPrescriptionsDetails).getAsJsonObject();
         }
 

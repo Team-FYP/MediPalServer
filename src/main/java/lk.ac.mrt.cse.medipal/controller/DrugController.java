@@ -201,7 +201,7 @@ public class DrugController {
     }
     public boolean addDrug(Drug drug){
         boolean status = false;
-        PreparedStatement preparedStatementDisease;
+        PreparedStatement preparedStatementDisease = null;
         try {
             connection = DB_Connection.getDBConnection().getConnection();
             String DRUGSQL = "INSERT INTO `drug` (`drug_id`,`drug_name`,`category_id`) VALUES (?, ?, ?) ";
@@ -225,7 +225,7 @@ public class DrugController {
         } finally {
             try {
                 DbUtils.closeQuietly(resultSet);
-                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.closeQuietly(preparedStatementDisease);
                 DbUtils.close(connection);
             } catch (SQLException ex) {
                 LOGGER.error("Error closing sql connection", ex);

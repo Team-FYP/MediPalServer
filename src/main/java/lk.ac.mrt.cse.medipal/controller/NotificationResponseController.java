@@ -27,7 +27,7 @@ public class NotificationResponseController {
         boolean isADoctor = doctorController.isADoctor(user_id);
         if(isADoctor){
             ArrayList<ShareNotification> shareRequestArrayList = shareNotificationController.getAllSharedNotifications(user_id);
-            ArrayList<AllergyNotification> allergyNotificationArrayList = allergyNotificationController.getAllPrescriptionNotifications(user_id);
+            ArrayList<AllergyNotification> allergyNotificationArrayList = allergyNotificationController.getAllAllergyNotifications(user_id);
             notificationResponse.setAllergy_notifications(allergyNotificationArrayList);
             notificationResponse.setShare_notifications(shareRequestArrayList);
         }else {

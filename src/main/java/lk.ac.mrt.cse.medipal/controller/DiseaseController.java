@@ -100,4 +100,31 @@ public class DiseaseController {
         return -1;
     }
 
+    public String getDiseaseName(int diseaseID){
+        String disease_name = null;
+        try {
+            connection = DB_Connection.getDBConnection().getConnection();
+            String SQL = "SELECT DISEASE_NAME FROM  `disease` WHERE `DISEASE_ID` = ?";
+            preparedStatement = connection.prepareStatement(SQL);
+            preparedStatement.setString(1, String.valueOf(diseaseID));
+            resultSet = preparedStatement.executeQuery();
+            Disease disease = new Disease();
+            if (resultSet.next()){
+                disease_name =resultSet.getString("DISEASE_NAME");
+                return disease_name;
+            }
+        } catch (SQLException | IOException | PropertyVetoException ex) {
+            LOGGER.error("Error getting disease details", ex);
+        } finally {
+            try {
+                DbUtils.closeQuietly(resultSet);
+                DbUtils.closeQuietly(preparedStatement);
+                DbUtils.close(connection);
+            } catch (SQLException ex) {
+                LOGGER.error("Error closing sql connection", ex);
+            }
+        }
+        return null;
+    }
+
 }
