@@ -105,9 +105,9 @@ public class ScoreCalculationController {
         Thread[] thread = new Thread[size*size];
 
         try {
-            for(int i=0; i < size/2; i++) {
+            for(int i=0; i < size; i++) {
 
-                for(int j=0; j<size/2; j++ ) {
+                for(int j=0; j<size; j++ ) {
                 thread[threadcount] = new Thread(new WorkerThread(i, j, subMatrices_A.get(i), subMatrices_B.get(j), scoreMatrix, finalScoreMatrix));
                     thread[threadcount].start();
 

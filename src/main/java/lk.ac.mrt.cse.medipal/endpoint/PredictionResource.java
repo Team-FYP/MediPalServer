@@ -33,8 +33,10 @@ public class PredictionResource {
             drugArrayList.add(drugController.getDrugDetailsByName(levelUpDrugs[i]));
         }
 
+
         JsonArray drugsArray = gson.toJsonTree(drugArrayList).getAsJsonArray();
         returnObject.add("itemsList",drugsArray);
+
         return Response.status(Response.Status.OK).entity(returnObject.toString()).build();
     }
 

@@ -12,9 +12,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import static java.lang.Math.max;
+
 public class PredictionController {
 
     public static Logger LOGGER = org.apache.log4j.Logger.getLogger(PredictionController.class);
+
+    private String[][] getTranspose(String[][] mat){
+
+        int matSize = max(mat.length,mat[0].length);
+        String[][] transposedMatrix = new String[matSize][matSize];
+        for(int i=0; i<matSize ; i++){
+            for(int j=0;j<matSize;j++) {
+                transposedMatrix[i][j] = mat[j][i];
+                System.out.println(transposedMatrix[i][j]);
+            }
+
+        }
+        return transposedMatrix;
+
+    }
 
     private Object[] transformArrays(String[][] pathList, String[] patientHistory){
 
@@ -24,14 +41,26 @@ public class PredictionController {
         int maximum = Math.max(Math.max(pathList.length, pathList[0].length), patientHistory.length);
         String[][] pathListMatix = new String[maximum][maximum];
         String[][] patientHistoryMatrix = new String[maximum][maximum];
+        String[][] patientHistoryMatrixBeforeTrans = new String[maximum][maximum];
 
         for(int i=0; i<maximum; i++){
             pathListMatix[i] = Arrays.copyOf(pathList[i], maximum);
         }
 
         for(int l=0; l<maximum; l++){
-            patientHistoryMatrix[l] = Arrays.copyOf(patientHistory, maximum);
+
+            for(int j=0;j<maximum;j++) {
+
+                patientHistoryMatrixBeforeTrans[l] = Arrays.copyOf(patientHistory, maximum);
+                patientHistoryMatrix[j][l] = patientHistoryMatrixBeforeTrans[l][j];
+
+            }
+
+
+            //patientHistoryMatrix[l] = Arrays.copyOf(patientHistory, maximum);
         }
+
+
 
         return new Object[]{pathListMatix, patientHistoryMatrix};
 
@@ -93,6 +122,8 @@ public class PredictionController {
         String[][] pathList = pathController.findDiseaseLevelUpPathList(disease, prescribeCategory);
 
         Object[] arrays = transformArrays(pathList, patientHistory.toArray(new String[patientHistory.size()]));
+        //String[][] transposedMatrix = getTranspose((String[][])arrays[1]);
+        //arrays[1] = transposedMatrix;
 
         return pathList[calculationController.getBestPathId((String[][])arrays[0], (String[][])arrays[1])];
     }
@@ -149,6 +180,7 @@ public class PredictionController {
         String[][] pathList = pathController.findDiseaseLevelDownPathList(disease, prescribeCategory);
 
         Object[] arrays = transformArrays(pathList, patientHistory.toArray(new String[patientHistory.size()]));
+
 
         return pathList[calculationController.getBestPathId((String[][])arrays[0], (String[][])arrays[1])];
     }
